@@ -9,6 +9,9 @@ type User struct {
 	Email     string `gorm:"unique;not null"`
 	Password  string `gorm:"not null"`
 	CreatedAt time.Time
+
+	Likes []Like        `gorm:"foreignKey:UserID"`
+	Views []CartoonView `gorm:"foreignKey:UserID"`
 }
 
 /* CARTOONS */
@@ -25,6 +28,8 @@ type Cartoon struct {
 
 	Images     []CartoonImage `gorm:"foreignKey:CartoonID"`
 	Characters []Character    `gorm:"foreignKey:CartoonID"`
+	Likes      []Like         `gorm:"foreignKey:CartoonID"`
+	Views      []CartoonView  `gorm:"foreignKey:CartoonID"`
 }
 
 /* CARTOON IMAGES */
@@ -33,6 +38,8 @@ type CartoonImage struct {
 	CartoonID uint
 	ImageURL  string
 	ImageType string
+
+	Cartoon Cartoon `gorm:"foreignKey:CartoonID"`
 }
 
 /* CHARACTERS */
@@ -43,6 +50,8 @@ type Character struct {
 	Role        string
 	Power       string
 	Description string
+
+	Cartoon Cartoon `gorm:"foreignKey:CartoonID"`
 }
 
 /* LIKES */
@@ -50,13 +59,20 @@ type Like struct {
 	ID        uint `gorm:"primaryKey"`
 	CartoonID uint
 	UserID    uint
+
+	Cartoon Cartoon `gorm:"foreignKey:CartoonID"`
+	User    User    `gorm:"foreignKey:UserID"`
 }
 
 /* CARTOON VIEWS */
 type CartoonView struct {
 	ID        uint `gorm:"primaryKey"`
 	CartoonID uint
+	UserID    uint
 	ViewedAt  time.Time
+
+	Cartoon Cartoon `gorm:"foreignKey:CartoonID"`
+	User    User    `gorm:"foreignKey:UserID"`
 }
 
 /* ADMINS */
@@ -64,6 +80,8 @@ type Admin struct {
 	ID       uint   `gorm:"primaryKey"`
 	Username string `gorm:"unique"`
 	Password string
+
+	Logs []AdminActivityLog `gorm:"foreignKey:AdminID"`
 }
 
 /* ADMIN ACTIVITY LOGS */
@@ -72,4 +90,6 @@ type AdminActivityLog struct {
 	AdminID   uint
 	Action    string
 	CreatedAt time.Time
+
+	Admin Admin `gorm:"foreignKey:AdminID"`
 }
