@@ -3,6 +3,7 @@ package main
 import (
 	"cartoon-network-go/backend/src/db"
 	"cartoon-network-go/backend/src/models"
+	"cartoon-network-go/backend/src/router"
 )
 
 func main() {
@@ -19,4 +20,6 @@ func main() {
 		&models.AdminActivityLog{},
 	)
 
+	r := router.SetupRouter()
+	r.Run(":8000")
 }
