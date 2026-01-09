@@ -9,6 +9,8 @@ import (
 	"cartoon-network-go/backend/src/models"
 	"cartoon-network-go/backend/src/worker"
 
+	"cartoon-network-go/backend/src/services"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,12 +20,21 @@ func GetAllCartoons(c *gin.Context) {
 	c.JSON(http.StatusOK, cartoons)
 }
 
-/* ===== CARTOON DETAIL PAGE ===== */
 func GetCartoonByID(c *gin.Context) {
 	id := c.Param("id")
 
 	var cartoon models.Cartoon
 	db.DB.Preload("Images").Preload("Characters").First(&cartoon, id)
+
+	// 🔥 only fetch if rating not stored
+	if cartoon.ImdbRating == 0 {
+
+		rating, err := services.FetchIMDBRating(cartoon.Name)
+		if err == nil && rating > 0 {
+			cartoon.ImdbRating = rating
+			db.DB.Save(&cartoon)
+		}
+	}
 
 	c.JSON(http.StatusOK, cartoon)
 }
