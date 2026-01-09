@@ -9,6 +9,8 @@ import (
 	"cartoon-network-go/backend/src/models"
 	"cartoon-network-go/backend/src/worker"
 
+	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -132,24 +134,47 @@ func GetTrendingCartoons(c *gin.Context) {
 
 	c.JSON(http.StatusOK, cartoons)
 }
-func GetAgeGroups(c *gin.Context) {
-	var ages []string
+func GetCartoonsByAgeGroup(c *gin.Context) {
 
-	db.DB.Model(&models.Cartoon{}).
-		Distinct().
-		Pluck("age_group", &ages)
+	var cartoons []models.Cartoon
+	db.DB.Find(&cartoons)
 
-	c.JSON(http.StatusOK, ages)
+	result := make(map[string][]models.Cartoon)
+
+	for _, ct := range cartoons {
+
+		age := strings.Replace(ct.AgeGroup, "+", "", -1)
+		val, _ := strconv.Atoi(age)
+
+		var bucket string
+
+		switch {
+		case val <= 6:
+			bucket = "5-6"
+		case val <= 8:
+			bucket = "7-8"
+		case val <= 10:
+			bucket = "9-10"
+		default:
+			bucket = "11-12"
+		}
+
+		result[bucket] = append(result[bucket], ct)
+	}
+
+	c.JSON(http.StatusOK, result)
 }
 
-func GetGenres(c *gin.Context) {
-	var genres []string
+func GetCartoonsByGenre(c *gin.Context) {
+	var cartoons []models.Cartoon
+	db.DB.Find(&cartoons)
 
-	db.DB.Model(&models.Cartoon{}).
-		Distinct().
-		Pluck("genre", &genres)
+	result := make(map[string][]models.Cartoon)
+	for _, ctoon := range cartoons {
+		result[ctoon.Genre] = append(result[ctoon.Genre], ctoon)
+	}
 
-	c.JSON(http.StatusOK, genres)
+	c.JSON(http.StatusOK, result)
 }
 
 func GetRecommendedCartoons(c *gin.Context) {

@@ -21,8 +21,10 @@ func SetupRouter() *gin.Engine {
 	r.GET("/cartoons/search", controllers.SearchCartoons)
 	r.GET("/cartoons/paginate", controllers.GetPaginatedCartoons)
 	r.GET("/cartoons/trending", controllers.GetTrendingCartoons)
-	r.GET("/cartoons/age-groups", controllers.GetAgeGroups)
-	r.GET("/cartoons/genres", controllers.GetGenres)
+	r.GET("/cartoons/by-age-group", controllers.GetCartoonsByAgeGroup)
+
+	r.GET("/cartoons/by-genre", controllers.GetCartoonsByGenre)
+
 	r.GET("/cartoon/:id/recommendations", controllers.GetRecommendedCartoons)
 
 	// Protected Routes (JWT)
