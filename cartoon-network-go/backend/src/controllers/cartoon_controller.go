@@ -151,3 +151,20 @@ func GetGenres(c *gin.Context) {
 
 	c.JSON(http.StatusOK, genres)
 }
+
+func GetRecommendedCartoons(c *gin.Context) {
+	id := c.Param("id")
+
+	var current models.Cartoon
+	db.DB.First(&current, id)
+
+	var cartoons []models.Cartoon
+	db.DB.
+		Where("id != ?", current.ID).
+		Where("genre = ?", current.Genre).
+		Order("imdb_rating DESC").
+		Limit(5).
+		Find(&cartoons)
+
+	c.JSON(http.StatusOK, cartoons)
+}
