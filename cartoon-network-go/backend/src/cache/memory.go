@@ -13,10 +13,15 @@ var (
 	mutex     sync.RWMutex
 )
 
+// RefreshHomeCache continuously refreshes home page cartoon cache
 func RefreshHomeCache() {
 	for {
 		var cartoons []models.Cartoon
-		db.DB.Preload("Images").Find(&cartoons)
+
+		db.DB.
+			Preload("Images").
+			Preload("Characters").
+			Find(&cartoons)
 
 		mutex.Lock()
 		homeCache = cartoons
@@ -26,6 +31,7 @@ func RefreshHomeCache() {
 	}
 }
 
+// GetHomeCache safely returns cached cartoons
 func GetHomeCache() []models.Cartoon {
 	mutex.RLock()
 	defer mutex.RUnlock()

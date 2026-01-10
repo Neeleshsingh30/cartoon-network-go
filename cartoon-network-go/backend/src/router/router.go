@@ -12,6 +12,19 @@ import (
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	// ==============================
+	// Health Check
+	// ==============================
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"status": "Backend running",
+		})
+	})
+
+	// ==============================
+	// Public User Routes
+	// ==============================
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://127.0.0.1:5500", "http://localhost:5500"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -25,6 +38,48 @@ func SetupRouter() *gin.Engine {
 
 	// Public Routes
 	r.POST("/signup", controllers.Signup)
+
+	// ==============================
+	// Admin Routes
+	// ==============================
+	admin := r.Group("/admin")
+
+	// 🔓 Public admin route
+	admin.POST("/login", controllers.AdminLogin)
+
+	// 🔐 Protected admin routes (JWT required)
+	admin.Use(middlewares.AdminAuth())
+	{
+		// Cartoon management
+		admin.POST("/cartoon", controllers.AddCartoon)
+		admin.DELETE("/cartoon/:id", controllers.DeleteCartoon)
+
+		// Character management
+		admin.POST("/cartoon/:cartoon_id/character", controllers.AddCharacter)
+		admin.GET("/cartoon/:cartoon_id/characters", controllers.GetCharactersByCartoon)
+
+		// Cartoon listing
+		admin.GET("/cartoons", controllers.GetAllCartoons)
+
+		// Image upload
+		admin.POST("/upload-image", controllers.UploadImage)
+
+		// Admin activity logs
+		admin.GET("/logs", controllers.GetAdminLogs)
+
+		// ==========================
+		// Admin Management
+		// ==========================
+		// Create admin (admin + super admin both allowed)
+		admin.POST("/create-admin", controllers.CreateAdmin)
+
+		// Delete admin (SUPER ADMIN ONLY)
+		admin.DELETE(
+			"/delete-admin/:id",
+			middlewares.SuperAdminOnly(),
+			controllers.DeleteAdmin,
+		)
+	}
 	r.POST("/login", controllers.Login)
 	r.GET("/cartoons", controllers.GetAllCartoons)
 	r.GET("/cartoon/:id", controllers.GetCartoonByID)
