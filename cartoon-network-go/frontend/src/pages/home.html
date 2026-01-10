@@ -1,21 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Cartoon Network Home</title>
+  <title>Cartoon Network – Home</title>
+  <link rel="stylesheet" href="../css/home.css">
 </head>
 <body>
 
-  <h1>Welcome to Cartoon Network 🎉</h1>
-  <p>You are logged in successfully.</p>
+  <header class="top-bar">
+  <div class="logo">
+    <img src="../../images/cn-logo.svg" class="logo-svg">
+  </div>
 
-  <button onclick="logout()">Logout</button>
+  <div class="nav-actions">
+    <button class="nav-btn" onclick="openAllCartoons()">All Cartoons</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
 
-<script>
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "index.html";
+
+  <!-- HERO BANNER -->
+ <section class="banner" style="background-image: url('../../images/home-banner.jpeg');"></section>
+
+  <!-- CARTOON GRID -->
+ <section class="cartoon-section">
+  <div class="welcome-text">
+    <h1>Welcome to Cartoon Network</h1>
+    <p>Have a look at your Nostalgic Cartoons</p>
+  </div>
+
+  <h2>All Cartoons</h2>
+  <div class="cartoon-grid" id="cartoonGrid"></div>
+</section>
+
+  <script src="../js/home.js"></script>
+  <script>
+function openAllCartoons(){
+  window.location.href = "all-cartoons.html";
 }
 </script>
+
+
+  <script>
+    function logout(){
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    }
+  </script>
+  
 
 </body>
 </html>

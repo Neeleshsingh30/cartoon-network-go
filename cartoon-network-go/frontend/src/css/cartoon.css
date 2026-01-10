@@ -1,0 +1,53 @@
+body {
+  margin:0;
+  background:#0f172a;
+  color:white;
+  font-family:Segoe UI;
+}
+
+.top-bar {
+  height:60px;
+  background:black;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 25px;
+}
+
+.logo-svg { height:38px; }
+
+.detail-banner {
+  height:350px;
+  background-size:cover;
+  background-position:center;
+}
+
+.cartoon-info {
+  padding:25px;
+  display:flex;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.info-box {
+  background:#1e293b;
+  padding:10px 18px;
+  border-radius:8px;
+}
+
+.section-title {
+  margin:20px;
+}
+
+.char-table {
+  width:95%;
+  margin:0 auto 40px;
+  border-collapse:collapse;
+}
+
+.char-table th, .char-table td {
+  border:1px solid #334155;
+  padding:10px;
+}
+
+.char-table th { background:#020617; }
