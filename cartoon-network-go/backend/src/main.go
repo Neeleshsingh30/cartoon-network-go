@@ -6,9 +6,12 @@ import (
 	"cartoon-network-go/backend/src/models"
 	"cartoon-network-go/backend/src/router"
 	"cartoon-network-go/backend/src/worker"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load("backend/src/.env")
 
 	db.ConnectDB()
 	worker.StartWorkerPool()
