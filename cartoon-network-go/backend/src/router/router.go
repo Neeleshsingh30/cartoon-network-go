@@ -81,7 +81,7 @@ func SetupRouter() *gin.Engine {
 		)
 	}
 	r.POST("/login", controllers.Login)
-	r.GET("/cartoons", controllers.GetAllCartoons)
+	r.GET("/cartoons", controllers.GetHomeCartoons)
 	r.GET("/cartoon/:id", controllers.GetCartoonByID)
 	r.GET("/cartoon/:id/views", controllers.GetCartoonViewCount)
 	r.GET("/cartoons/timings", controllers.GetShowTimings)
