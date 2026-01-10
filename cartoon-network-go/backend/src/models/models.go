@@ -24,6 +24,7 @@ type Cartoon struct {
 	Universe    string
 	ShowTime    string
 	ImdbRating  float32
+	AirDate     time.Time
 	CreatedAt   time.Time
 
 	Images     []CartoonImage `gorm:"foreignKey:CartoonID"`
