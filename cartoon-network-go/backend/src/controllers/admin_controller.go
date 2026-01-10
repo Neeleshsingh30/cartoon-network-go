@@ -14,9 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-/* =========================================================
-   JWT CONFIG & HELPERS
-========================================================= */
+/* ================= JWT ================= */
 
 var jwtSecret = []byte(getJWTSecret())
 
@@ -27,21 +25,28 @@ func getJWTSecret() string {
 	return "cartoon_network_secret"
 }
 
-func generateAdminToken(adminID uint) (string, error) {
+func generateAdminToken(admin models.Admin) (string, error) {
 	claims := jwt.MapClaims{
-		"admin_id": adminID,
-		"role":     "admin",
+		"admin_id": admin.ID,
+		"role":     admin.Role,
 		"exp":      time.Now().Add(24 * time.Hour).Unix(),
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtSecret)
 }
 
-/* =========================================================
-   ADMIN LOGIN
-   POST /admin/login
-========================================================= */
+/* ================= PASSWORD HELPERS ================= */
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	return string(bytes), err
+}
+
+func checkPassword(password, hash string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
+}
+
+/* ================= ADMIN LOGIN ================= */
 
 type AdminLoginInput struct {
 	Username string `json:"username"`
@@ -53,40 +58,36 @@ func AdminLogin(c *gin.Context) {
 	var admin models.Admin
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
 
 	if err := db.DB.Where("username = ?", input.Username).First(&admin).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.JSON(401, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(admin.Password), []byte(input.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+	if !checkPassword(input.Password, admin.Password) {
+		c.JSON(401, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	token, err := generateAdminToken(admin.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Token generation failed"})
-		return
-	}
+	token, _ := generateAdminToken(admin)
 
 	db.DB.Create(&models.AdminActivityLog{
 		AdminID: admin.ID,
 		Action:  "Admin Logged In",
 	})
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(200, gin.H{
 		"message": "Login successful",
 		"token":   token,
+		"role":    admin.Role,
 	})
 }
 
 /* =========================================================
    ADD CARTOON
-   POST /admin/cartoon
 ========================================================= */
 
 func AddCartoon(c *gin.Context) {
@@ -114,7 +115,6 @@ func AddCartoon(c *gin.Context) {
 
 /* =========================================================
    DELETE CARTOON
-   DELETE /admin/cartoon/:id
 ========================================================= */
 
 func DeleteCartoon(c *gin.Context) {
@@ -141,8 +141,76 @@ func DeleteCartoon(c *gin.Context) {
 }
 
 /* =========================================================
-   IMAGE UPLOAD (SUPABASE PLACEHOLDER)
-   POST /admin/upload-image
+   ADD CHARACTER
+========================================================= */
+
+func AddCharacter(c *gin.Context) {
+	cartoonIDParam := c.Param("cartoon_id")
+
+	cartoonID, err := strconv.Atoi(cartoonIDParam)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid cartoon ID"})
+		return
+	}
+
+	var cartoon models.Cartoon
+	if err := db.DB.First(&cartoon, cartoonID).Error; err != nil {
+		c.JSON(404, gin.H{"error": "Cartoon not found"})
+		return
+	}
+
+	var character models.Character
+	if err := c.ShouldBindJSON(&character); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid character data"})
+		return
+	}
+
+	character.CartoonID = uint(cartoonID)
+
+	if err := db.DB.Create(&character).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to add character"})
+		return
+	}
+
+	db.DB.Create(&models.AdminActivityLog{
+		Action: "Added Character: " + character.Name + " to Cartoon: " + cartoon.Name,
+	})
+
+	c.JSON(200, gin.H{
+		"message":   "Character added successfully",
+		"character": character,
+	})
+}
+
+/* =========================================================
+   GET CARTOONS & CHARACTERS
+========================================================= */
+
+func GetAllCartoons(c *gin.Context) {
+	var cartoons []models.Cartoon
+
+	if err := db.DB.Preload("Characters").Find(&cartoons).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch cartoons"})
+		return
+	}
+
+	c.JSON(200, gin.H{"cartoons": cartoons})
+}
+
+func GetCharactersByCartoon(c *gin.Context) {
+	cartoonID := c.Param("cartoon_id")
+
+	var characters []models.Character
+	if err := db.DB.Where("cartoon_id = ?", cartoonID).Find(&characters).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch characters"})
+		return
+	}
+
+	c.JSON(200, gin.H{"characters": characters})
+}
+
+/* =========================================================
+   UPLOAD IMAGE
 ========================================================= */
 
 func UploadImage(c *gin.Context) {
@@ -152,7 +220,6 @@ func UploadImage(c *gin.Context) {
 		return
 	}
 
-	// ⚠️ Supabase integration yahan connect hogi
 	imageURL := "https://supabase.fake.url/" + file.Filename
 
 	db.DB.Create(&models.AdminActivityLog{
@@ -167,7 +234,6 @@ func UploadImage(c *gin.Context) {
 
 /* =========================================================
    ADMIN ACTIVITY LOGS
-   GET /admin/logs
 ========================================================= */
 
 func GetAdminLogs(c *gin.Context) {
@@ -182,48 +248,82 @@ func GetAdminLogs(c *gin.Context) {
 	})
 }
 
-func AddCharacter(c *gin.Context) {
+/* ================= CREATE ADMIN ================= */
 
-	// 1️⃣ Get cartoon_id from URL
-	cartoonIDParam := c.Param("cartoon_id")
+type CreateAdminInput struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Role     string `json:"role"` // admin / super_admin
+}
 
-	cartoonID, err := strconv.Atoi(cartoonIDParam)
+func CreateAdmin(c *gin.Context) {
+	var input CreateAdminInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	hashedPassword, err := hashPassword(input.Password)
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid cartoon ID"})
+		c.JSON(500, gin.H{"error": "Password hashing failed"})
 		return
 	}
 
-	// 2️⃣ Check cartoon exists or not
-	var cartoon models.Cartoon
-	if err := db.DB.First(&cartoon, cartoonID).Error; err != nil {
-		c.JSON(404, gin.H{"error": "Cartoon not found"})
+	role := "admin"
+	if input.Role != "" {
+		role = input.Role
+	}
+
+	admin := models.Admin{
+		Username: input.Username,
+		Password: hashedPassword,
+		Role:     role,
+	}
+
+	if err := db.DB.Create(&admin).Error; err != nil {
+		c.JSON(400, gin.H{"error": "Admin already exists"})
 		return
 	}
 
-	// 3️⃣ Bind character input
-	var character models.Character
-	if err := c.ShouldBindJSON(&character); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid character data"})
-		return
-	}
+	creatorID := c.GetUint("admin_id")
 
-	// 4️⃣ Set CartoonID
-	character.CartoonID = uint(cartoonID)
-
-	// 5️⃣ Save character
-	if err := db.DB.Create(&character).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Failed to add character"})
-		return
-	}
-
-	// 6️⃣ Log admin activity
 	db.DB.Create(&models.AdminActivityLog{
-		Action: "Added Character: " + character.Name + " to Cartoon: " + cartoon.Name,
+		AdminID: creatorID,
+		Action:  "Created Admin: " + admin.Username,
 	})
 
-	// 7️⃣ Success response
-	c.JSON(200, gin.H{
-		"message":   "Character added successfully",
-		"character": character,
+	c.JSON(201, gin.H{
+		"message": "Admin created successfully",
+		"admin": gin.H{
+			"id":       admin.ID,
+			"username": admin.Username,
+			"role":     admin.Role,
+		},
 	})
+}
+
+/* ================= DELETE ADMIN ================= */
+
+func DeleteAdmin(c *gin.Context) {
+	id := c.Param("id")
+
+	var admin models.Admin
+	if err := db.DB.First(&admin, id).Error; err != nil {
+		c.JSON(404, gin.H{"error": "Admin not found"})
+		return
+	}
+
+	if admin.Role == "super_admin" {
+		c.JSON(403, gin.H{"error": "Cannot delete super admin"})
+		return
+	}
+
+	db.DB.Delete(&admin)
+
+	db.DB.Create(&models.AdminActivityLog{
+		Action: "Deleted Admin: " + admin.Username,
+	})
+
+	c.JSON(200, gin.H{"message": "Admin deleted successfully"})
 }

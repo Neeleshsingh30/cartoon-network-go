@@ -80,6 +80,7 @@ type Admin struct {
 	ID       uint   `gorm:"primaryKey"`
 	Username string `gorm:"unique"`
 	Password string
+	Role     string // "admin" or "super_admin"
 
 	Logs []AdminActivityLog `gorm:"foreignKey:AdminID"`
 }
