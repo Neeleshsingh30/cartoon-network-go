@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cartoon Network Home</title>
+</head>
+<body>
+
+  <h1>Welcome to Cartoon Network 🎉</h1>
+  <p>You are logged in successfully.</p>
+
+  <button onclick="logout()">Logout</button>
+
+<script>
+function logout(){
+  localStorage.removeItem("token");
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>

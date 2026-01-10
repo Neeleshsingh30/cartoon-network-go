@@ -1,0 +1,74 @@
+/* Full background */
+.bg {
+  background: url("../../images/CN-BG-AUTH.jpg") no-repeat center/cover;
+  height: 100vh;
+  margin: 0;
+  font-family: sans-serif;
+}
+
+/* No dark overlay, just layout container */
+.overlay {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+/* Layout to push content left */
+.layout {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Login / Signup box */
+.auth-box {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 35px;
+  width: 320px;
+  border-radius: 12px;
+  margin-left: 60px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: #ff3d00;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.auth-box p {
+  margin-top: 15px;
+  cursor: pointer;
+  color: #ff3d00;
+}
+
+/* Admin login link */
+.admin-login {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+}
+
+.admin-login a {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}

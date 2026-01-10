@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cartoon Network Login</title>
+  <link rel="stylesheet" href="../css/auth.css">
+</head>
+
+<body class="bg">
+
+  <!-- Admin Login -->
+  <div class="admin-login">
+    <a href="admin.html">Admin Login</a>
+  </div>
+
+  <!-- Content -->
+  <div class="overlay">
+    <div class="layout">
+
+      <div class="auth-box">
+        <h2 id="title">Login</h2>
+
+        <input id="username" placeholder="Username">
+        <input id="email" placeholder="Email" style="display:none">
+
+        <input id="password" type="password" placeholder="Password">
+        <input id="confirm" type="password" placeholder="Confirm Password" style="display:none">
+
+        <button onclick="submitForm()">Login</button>
+        <p onclick="toggle()">Don't have an account? Sign up</p>
+      </div>
+
+    </div>
+  </div>
+
+<script src="../js/auth.js"></script>
+</body>
+</html>

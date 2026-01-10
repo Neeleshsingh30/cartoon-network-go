@@ -8,6 +8,8 @@ import (
 
 	"time"
 
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -16,6 +18,7 @@ import (
 /* ===== Signup Input ===== */
 type SignupInput struct {
 	Username        string `json:"username"`
+	Email           string `json:"email"`
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 }
@@ -25,7 +28,12 @@ func Signup(c *gin.Context) {
 	var input SignupInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input format"})
+		return
+	}
+
+	if input.Username == "" || input.Email == "" || input.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "All fields are required"})
 		return
 	}
 
@@ -38,11 +46,12 @@ func Signup(c *gin.Context) {
 
 	user := models.User{
 		Username: input.Username,
+		Email:    input.Email,
 		Password: string(hashedPassword),
 	}
 
 	if err := db.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username or Email already exists"})
 		return
 	}
 
@@ -50,7 +59,7 @@ func Signup(c *gin.Context) {
 }
 
 /* ===== Login API ===== */
-var jwtKey = []byte("secret_cartoon_key")
+var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 type LoginInput struct {
 	Username string `json:"username"`
@@ -85,6 +94,7 @@ func Login(c *gin.Context) {
 	tokenString, _ := token.SignedString(jwtKey)
 
 	c.JSON(http.StatusOK, gin.H{
-		"token": tokenString,
+		"access_token": tokenString,
 	})
+
 }
