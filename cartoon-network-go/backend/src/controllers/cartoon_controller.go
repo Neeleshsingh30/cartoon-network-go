@@ -185,10 +185,11 @@ func GetRecommendedCartoons(c *gin.Context) {
 
 	var cartoons []models.Cartoon
 	db.DB.
+		Preload("Images"). // 🔥 THIS WAS MISSING
 		Where("id != ?", current.ID).
 		Where("genre = ?", current.Genre).
 		Order("imdb_rating DESC").
-		Limit(5).
+		Limit(10).
 		Find(&cartoons)
 
 	c.JSON(http.StatusOK, cartoons)
