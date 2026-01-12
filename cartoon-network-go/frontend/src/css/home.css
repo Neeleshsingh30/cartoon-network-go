@@ -23,7 +23,7 @@ body {
   background: #ff4500;
   border: none;
   padding: 8px 18px;
-  color: white;
+  color: burlywood;
   border-radius: 6px;
   cursor: pointer;
 }
@@ -60,7 +60,7 @@ body {
 }
 
 .cartoon-card:hover {
-  transform: scale(1.08);
+  transform: scale(1.50);
 }
 
 .cartoon-card img {

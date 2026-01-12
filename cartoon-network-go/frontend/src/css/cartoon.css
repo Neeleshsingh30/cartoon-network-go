@@ -87,8 +87,8 @@ body {
 }
 
 .recommend-card {
-  min-width:160px;
-  max-width:160px;
+  min-width:260px;
+  max-width:260px;
   background:#1e293b;
   border-radius:10px;
   overflow:hidden;
@@ -97,7 +97,7 @@ body {
 }
 
 .recommend-card:hover {
-  transform:scale(1.06);
+  transform:scale(1.50);
 }
 
 .recommend-card img {
