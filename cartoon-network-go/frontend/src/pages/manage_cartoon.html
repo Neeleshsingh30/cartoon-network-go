@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Manage Cartoons</title>
+  <link rel="stylesheet" href="../css/manage_cartoon.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <h2>CN Admin Dashboard– Manage Cartoons</h2>
+  <div>
+    <button onclick="goDashboard()">Dashboard</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ADD CARTOON -->
+  <section class="card">
+    <h3>Add New Cartoon</h3>
+
+    <input id="cartoonName" placeholder="Cartoon Name">
+    <input id="genre" placeholder="Genre">
+    <input id="ageGroup" placeholder="Age Group">
+    <textarea id="description" placeholder="Description"></textarea>
+
+    <input type="file" id="cartoonImage">
+    <button onclick="addCartoon()">Add Cartoon</button>
+  </section>
+
+  <!-- ADD CHARACTER -->
+  <section class="card">
+    <h3>Add Character</h3>
+
+    <select id="cartoonSelect"></select>
+    <input id="charName" placeholder="Character Name">
+    <input id="charRole" placeholder="Role (Hero/Villain)">
+    <input id="charPower" placeholder="Power">
+    <textarea id="charDesc" placeholder="Description"></textarea>
+
+    <button onclick="addCharacter()">Add Character</button>
+  </section>
+
+  <!-- CARTOON TABLE -->
+  <section class="card">
+    <h3>All Cartoons</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Thumbnail</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="cartoonTable"></tbody>
+    </table>
+  </section>
+
+</div>
+
+<script src="../js/manage_cartoon.js"></script>
+</body>
+</html>

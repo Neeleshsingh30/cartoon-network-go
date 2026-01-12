@@ -1,0 +1,72 @@
+body {
+  background: url("../../src/images/manage_cartoons_bg.jpg") no-repeat center/cover;
+  font-family: Arial, sans-serif;
+  color: rgb(255, 255, 255);
+  margin: 0;
+}
+
+.top-bar {
+  background: rgb(0, 0, 0);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logout {
+  background: crimson;
+  color: white;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 30px auto;
+}
+
+.card {
+  background: #0d0c0cea;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+button {
+  background: #f97316;
+  border: none;
+  padding: 10px 16px;
+  color: white;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+th {
+  text-align: center;
+  padding: 12px;
+  border-bottom: 2px solid #334155;
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid #334155;
+}
+
+td:first-child {
+  text-align: center;
+  width: 60px;
+}
+
+td img {
+  width: 60px;
+  border-radius: 6px;
+}
