@@ -29,13 +29,14 @@ async function loadFavourites(){
     const data = await res.json();
     console.log("FAV DATA =>", data);
 
-    const grid = document.getElementById("favGrid");
-    grid.innerHTML = "";
+     const grid = document.getElementById("favList");    
+     grid.innerHTML = "";
 
     if(!Array.isArray(data) || data.length === 0){
       grid.innerHTML = "<p>No favourite cartoons yet ❤️</p>";
       return;
     }
+
 
     data.forEach(f => {
       if(!f.Cartoon) return;

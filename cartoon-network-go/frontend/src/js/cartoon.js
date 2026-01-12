@@ -145,3 +145,4 @@ async function loadRecommendations(){
 }
 
 window.onload = loadCartoon;
+window.toggleFavourite = toggleFavourite;
