@@ -77,6 +77,41 @@ async function loadFavCount(){
   }
 }
 
+async function loadTrendingCartoons(){
+  try{
+    const res = await fetch(`${BASE_URL}/cartoons/trending`);
+    const data = await res.json();
+
+    const grid = document.getElementById("trendingGrid");
+    grid.innerHTML = "";
+
+    data.forEach(c => {
+      let thumb = "../../images/CN-BG-AUTH.jpg";
+
+      if(c.Images && c.Images.length){
+        const img = c.Images.find(i => i.ImageType === "thumbnail") 
+               || c.Images.find(i => i.ImageType === "poster");
+        if(img) thumb = img.ImageURL;
+      }
+
+      const card = document.createElement("div");
+      card.className = "cartoon-card";
+      card.onclick = () => window.location.href = `cartoon.html?id=${c.ID}`;
+
+      card.innerHTML = `
+        <img src="${thumb}">
+        <p>${c.Name}</p>
+        <span style="color:gold;">🔥 ${c.view_count} views</span>
+      `;
+
+      grid.appendChild(card);
+    });
+
+  }catch(err){
+    console.error("Trending load error:", err);
+  }
+}
+
 /* ---------- LOGOUT ---------- */
 function logout(){
   localStorage.removeItem("token");
@@ -93,7 +128,7 @@ window.onload = function(){
       window.location.href = "index.html";
       return;
     }
-
+    loadTrendingCartoons();
     loadHomeCartoons();
     loadFavCount();
 

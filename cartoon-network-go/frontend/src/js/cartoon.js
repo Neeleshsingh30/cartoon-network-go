@@ -52,9 +52,27 @@ async function loadCartoon(){
       </tr>
     `;
   });
+  
 
   await checkLiked();
   loadRecommendations();
+  addView();
+}
+
+async function addView(){
+  const token = localStorage.getItem("token");
+  if(!token) return;
+
+  try{
+    await fetch(`${BASE_URL}/cartoon/${id}/view`,{
+      method: "POST",
+      headers:{
+        "Authorization": `Bearer ${token}`
+      }
+    });
+  }catch(err){
+    console.warn("View not counted");
+  }
 }
 
 /* ---------- LIKE STATUS CHECK ---------- */
