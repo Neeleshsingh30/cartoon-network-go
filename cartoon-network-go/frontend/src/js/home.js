@@ -99,3 +99,8 @@ window.onload = function(){
 
   }, 150);   // 150ms delay = race condition solved
 };
+function doSearch(){
+  const q = document.getElementById("searchInput").value.trim();
+  if(!q) return;
+  window.location.href = `search.html?query=${q}`;
+}

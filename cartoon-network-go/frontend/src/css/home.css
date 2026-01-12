@@ -5,13 +5,14 @@ body {
   color: white;
 }
 
+
 .top-bar {
   height: 60px;
   background: black;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 30px;
+  padding: 10px 30px;
 }
 
 .logo-svg {
@@ -19,31 +20,32 @@ body {
   width: auto;
 }
 
-.actions {
+.nav-actions {
   display: flex;
   gap: 10px;
+  /* padding: 10px; */
 }
 
-.actions button {
+.nav-actions button {
   background: transparent;
-  border: 1.5px solid #ff4500;
-  padding: 6px 14px;
-  color: #ffb089;
-  border-radius: 20px;
+  /* border: 1.5px solid #ff4500; */
+  padding: 6px 18px;
+  color: white;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
-.actions button:hover {
+.nav-actions button:hover {
   background: #ff4500;
   color: #000;
   box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);
   transform: translateY(-1px);
 }
 
-.actions button:active {
+.nav-actions button:active {
   transform: scale(0.95);
 }
 
@@ -91,4 +93,28 @@ body {
 .cartoon-card p {
   padding: 10px;
   text-align: center;
+}
+
+.search-box{
+  display:flex;
+  justify-content:center;
+  margin:20px;
+  gap:10px;
+}
+
+.search-box input{
+  width:300px;
+  padding:8px 12px;
+  border-radius:6px;
+  border:none;
+  outline:none;
+}
+
+.search-box button{
+  padding:8px 15px;
+  border:none;
+  background:#ef4444;
+  color:white;
+  border-radius:6px;
+  cursor:pointer;
 }

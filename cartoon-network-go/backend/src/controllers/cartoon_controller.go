@@ -116,15 +116,22 @@ func GetShowTimings(c *gin.Context) {
 }
 
 func SearchCartoons(c *gin.Context) {
-	query := c.Query("q")
+	query := strings.TrimSpace(c.Query("query"))
+
+	if query == "" {
+		c.JSON(http.StatusOK, []models.Cartoon{})
+		return
+	}
 
 	var cartoons []models.Cartoon
+
 	db.DB.Preload("Images").
 		Where("name ILIKE ?", "%"+query+"%").
 		Find(&cartoons)
 
 	c.JSON(http.StatusOK, cartoons)
 }
+
 func GetPaginatedCartoons(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
