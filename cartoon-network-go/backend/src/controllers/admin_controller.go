@@ -364,3 +364,23 @@ func DeleteAdmin(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "Admin deleted successfully"})
 }
+
+/* ================= GET ALL ADMINS (SUPER ADMIN) ================= */
+
+func GetAllAdmins(c *gin.Context) {
+	var admins []models.Admin
+
+	if err := db.DB.
+		Select("id, username, role").
+		Find(&admins).Error; err != nil {
+
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"admins": admins,
+	})
+}

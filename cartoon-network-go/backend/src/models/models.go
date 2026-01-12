@@ -80,7 +80,7 @@ type CartoonView struct {
 type Admin struct {
 	ID       uint   `gorm:"primaryKey"`
 	Username string `gorm:"unique"`
-	Password string
+	Password string `json:"-"`
 	Role     string // "admin" or "super_admin"
 
 	Logs []AdminActivityLog `gorm:"foreignKey:AdminID"`

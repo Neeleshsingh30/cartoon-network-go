@@ -71,23 +71,34 @@ func SetupRouter() *gin.Engine {
 	// 🔐 Protected Admin Routes
 	admin.Use(middlewares.AdminAuth())
 	{
-		// Cartoons
+		// ================= CARTOONS =================
 		admin.POST("/cartoon", controllers.AddCartoon)
 		admin.GET("/cartoons", controllers.GetAllCartoons)
 		admin.DELETE("/cartoon/:id", controllers.DeleteCartoon)
 
-		// Characters
+		// ================= CHARACTERS =================
 		admin.POST("/cartoon/:cartoon_id/character", controllers.AddCharacter)
 		admin.GET("/cartoon/:cartoon_id/characters", controllers.GetCharactersByCartoon)
 
-		// Image Upload
+		// ================= IMAGE UPLOAD =================
 		admin.POST("/upload-image", controllers.UploadImage)
 
-		// Logs
+		// ================= LOGS =================
 		admin.GET("/logs", controllers.GetAdminLogs)
 
-		// Admin Management
+		// ================= ADMIN MANAGEMENT =================
+
+		// 🔐 SUPER ADMIN ONLY → LIST ADMINS
+		admin.GET(
+			"/list",
+			middlewares.SuperAdminOnly(),
+			controllers.GetAllAdmins,
+		)
+
+		// 🔐 CREATE ADMIN (role check handled in controller)
 		admin.POST("/create-admin", controllers.CreateAdmin)
+
+		// 🔐 SUPER ADMIN ONLY → DELETE ADMIN
 		admin.DELETE(
 			"/delete-admin/:id",
 			middlewares.SuperAdminOnly(),

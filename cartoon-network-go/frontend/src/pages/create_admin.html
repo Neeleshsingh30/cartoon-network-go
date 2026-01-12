@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Manage Admins | CN</title>
+  <link rel="stylesheet" href="../css/create_admin.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <h2>CN Super Admin – Manage Admins</h2>
+  <div>
+    <button onclick="goDashboard()">Dashboard</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- CREATE ADMIN -->
+  <div class="card">
+    <h3>Create New Admin</h3>
+
+    <div id="error" class="error"></div>
+    <div id="success" class="success"></div>
+
+    <input id="username" placeholder="Username">
+    <input id="password" type="password" placeholder="Password">
+
+    <select id="role">
+      <option value="admin">Admin</option>
+      <option value="super_admin">Super Admin</option>
+    </select>
+
+    <button onclick="createAdmin()">Create Admin</button>
+  </div>
+
+  <!-- ADMIN LIST -->
+  <div class="card">
+    <h3>All Admins</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Role</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="adminTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="../js/create_admin.js"></script>
+</body>
+</html>
