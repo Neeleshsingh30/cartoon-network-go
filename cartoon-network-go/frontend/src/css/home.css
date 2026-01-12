@@ -19,13 +19,32 @@ body {
   width: auto;
 }
 
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
 .actions button {
-  background: #ff4500;
-  border: none;
-  padding: 8px 18px;
-  color: burlywood;
-  border-radius: 6px;
+  background: transparent;
+  border: 1.5px solid #ff4500;
+  padding: 6px 14px;
+  color: #ffb089;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.actions button:hover {
+  background: #ff4500;
+  color: #000;
+  box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);
+  transform: translateY(-1px);
+}
+
+.actions button:active {
+  transform: scale(0.95);
 }
 
 .banner {
