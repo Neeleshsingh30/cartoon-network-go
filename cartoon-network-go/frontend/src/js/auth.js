@@ -1,5 +1,4 @@
 const BASE_URL = "http://localhost:8000";
-
 let isLogin = true;
 
 function toggle(){
@@ -9,29 +8,23 @@ function toggle(){
   document.querySelector(".auth-box button").innerText = isLogin ? "Login" : "Signup";
   document.getElementById("confirm").style.display = isLogin ? "none" : "block";
   document.getElementById("email").style.display = isLogin ? "none" : "block";
-
 }
 
 async function submitForm(){
-
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const confirm  = document.getElementById("confirm").value.trim();
-  const email = document.getElementById("email").value.trim();
-
-
+  const email    = document.getElementById("email").value.trim();
 
   if(!isLogin && (!username || !email || !password || !confirm)){
-  alert("All fields are required");
-  return;
-}
+    alert("All fields are required");
+    return;
+  }
 
-if(isLogin && (!username || !password)){
-  alert("Username and Password required");
-  return;
-}
-
- 
+  if(isLogin && (!username || !password)){
+    alert("Username and Password required");
+    return;
+  }
 
   if(!isLogin && password !== confirm){
     alert("Passwords do not match");
@@ -40,19 +33,13 @@ if(isLogin && (!username || !password)){
 
   const url = isLogin ? "/login" : "/signup";
 
-const payload = isLogin
-  ? { username, password }
-  : {
-      username,
-      email,
-      password,
-      confirm_password: confirm
-    };
+  const payload = isLogin
+    ? { username, password }
+    : { username, email, password, confirm_password: confirm };
 
-
-  const res = await fetch(BASE_URL + url, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
+  const res = await fetch(BASE_URL + url,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body: JSON.stringify(payload)
   });
 
@@ -63,6 +50,28 @@ const payload = isLogin
     return;
   }
 
-  localStorage.setItem("token", data.access_token);
-  window.location.href = "home.html";
+  // 🔥 If LOGIN → token already in response
+  if(isLogin){
+    localStorage.setItem("token", data.access_token);
+    window.location.href = "home.html";
+  }
+
+  // 🔥 If SIGNUP → auto login now
+  else {
+    const loginRes = await fetch(BASE_URL + "/login",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ username, password })
+    });
+
+    const loginData = await loginRes.json();
+
+    if(!loginRes.ok){
+      alert("Signup done but auto-login failed");
+      return;
+    }
+
+    localStorage.setItem("token", loginData.access_token);
+    window.location.href = "home.html";
+  }
 }

@@ -111,3 +111,14 @@ body {
   font-size:13px;
   padding:8px;
 }
+.fav-btn {
+  margin: 15px 25px;
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+}
+
+.fav-btn.liked {
+  color: #ef4444;
+}

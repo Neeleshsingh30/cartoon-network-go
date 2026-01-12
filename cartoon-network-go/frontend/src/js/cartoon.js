@@ -1,17 +1,29 @@
 const BASE_URL = "http://localhost:8000";
 const id = new URLSearchParams(window.location.search).get("id");
 
+let isLiked = false;
+
+/* ---------- AUTH HEADER ---------- */
+function authHeader(){
+  const token = localStorage.getItem("token");
+  return token ? { "Authorization": `Bearer ${token}` } : {};
+}
+
+/* ---------- STAR RENDER ---------- */
 function renderStars(imdb){
   const stars = Math.round(imdb / 2);
   return "★".repeat(stars) + "☆".repeat(5 - stars);
 }
 
+/* ---------- LOAD CARTOON ---------- */
 async function loadCartoon(){
   const res = await fetch(`${BASE_URL}/cartoon/${id}`);
   const data = await res.json();
 
-  const banner = data.Images.find(i => i.ImageType === "banner")?.ImageURL;
-  document.getElementById("banner").style.backgroundImage = `url(${banner})`;
+  const banner = data.Images?.find(i => i.ImageType === "banner")?.ImageURL;
+  if(banner){
+    document.getElementById("banner").style.backgroundImage = `url(${banner})`;
+  }
 
   document.getElementById("cartoonInfo").innerHTML = `
     <div class="info-box">Description: ${data.Description}</div>
@@ -41,33 +53,79 @@ async function loadCartoon(){
     `;
   });
 
+  await checkLiked();
   loadRecommendations();
 }
 
+/* ---------- LIKE STATUS CHECK ---------- */
+async function checkLiked(){
+  try{
+    const res = await fetch(`${BASE_URL}/user/favourites`,{
+      headers: authHeader()
+    });
+
+    if(!res.ok) return;
+
+    const favs = await res.json();
+    isLiked = favs.some(f => String(f.Cartoon.ID) === String(id));
+    updateHeart();
+  }catch(err){
+    console.warn("Like check skipped");
+  }
+}
+
+/* ---------- HEART UI ---------- */
+function updateHeart(){
+  const btn = document.getElementById("favBtn");
+  if(!btn) return;
+  btn.innerHTML = isLiked ? "❤️" : "🤍";
+  btn.classList.toggle("liked", isLiked);
+}
+
+/* ---------- LIKE / UNLIKE ---------- */
+async function toggleFavourite(){
+
+  if(!localStorage.getItem("token")){
+    alert("Please login again");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const method = isLiked ? "DELETE" : "POST";
+
+  const res = await fetch(`${BASE_URL}/cartoon/${id}/like`,{
+    method,
+    headers:{
+      ...authHeader(),
+      "Content-Type": "application/json"
+    }
+  });
+
+  if(!res.ok){
+    console.error("LIKE FAILED", await res.text());
+    return;
+  }
+
+  isLiked = !isLiked;
+  updateHeart();
+}
+
+/* ---------- RECOMMENDATIONS ---------- */
 async function loadRecommendations(){
-  try {
+  try{
     const res = await fetch(`${BASE_URL}/cartoon/${id}/recommendations`);
     const data = await res.json();
-
-    console.log("RECOMMEND DATA =>", data);
 
     const grid = document.getElementById("recommendGrid");
     grid.innerHTML = "";
 
-    if (!data || data.length === 0) {
-      grid.innerHTML = "<p>No recommendations available.</p>";
-      return;
-    }
-
     data.forEach(c => {
-
       let thumb = "../../images/CN-BG-AUTH.jpg";
 
-      if (c.Images && c.Images.length > 0) {
-        const imgObj = c.Images.find(i => i.ImageType === "thumbnail") 
-                    || c.Images.find(i => i.ImageType === "poster");
-
-        if (imgObj) thumb = imgObj.ImageURL;
+      if(c.Images && c.Images.length){
+        const img = c.Images.find(i => i.ImageType === "thumbnail") 
+               || c.Images.find(i => i.ImageType === "poster");
+        if(img) thumb = img.ImageURL;
       }
 
       const card = document.createElement("div");
@@ -81,11 +139,9 @@ async function loadRecommendations(){
 
       grid.appendChild(card);
     });
-
-  } catch (err) {
+  }catch(err){
     console.error("Recommendation Error:", err);
   }
 }
 
 window.onload = loadCartoon;
-
