@@ -15,7 +15,7 @@ import (
 )
 
 /* ===== HOMEPAGE CARTOONS (CACHED + CONCURRENT) ===== */
-func GetAllCartoons(c *gin.Context) {
+func GetHomeCartoons(c *gin.Context) {
 	cartoons := cache.GetHomeCache()
 	c.JSON(http.StatusOK, cartoons)
 }

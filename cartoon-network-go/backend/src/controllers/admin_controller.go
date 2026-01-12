@@ -183,30 +183,67 @@ func AddCharacter(c *gin.Context) {
 }
 
 /* =========================================================
-   GET CARTOONS & CHARACTERS
+   GET CARTOONS & CHARACTERS (UPDATED WITH IMAGES)
 ========================================================= */
 
 func GetAllCartoons(c *gin.Context) {
-	var cartoons []models.Cartoon
+	type CartoonResponse struct {
+		ID        uint   `json:"id"`
+		Name      string `json:"name"`
+		Thumbnail string `json:"thumbnail"`
+	}
 
-	if err := db.DB.Preload("Characters").Find(&cartoons).Error; err != nil {
+	var result []CartoonResponse
+
+	err := db.DB.
+		Table("cartoons").
+		Select(`
+			cartoons.id,
+			cartoons.name,
+			COALESCE(
+				(
+					SELECT image_url
+					FROM cartoon_images
+					WHERE cartoon_images.cartoon_id = cartoons.id
+					AND LOWER(image_type) = 'thumbnail'
+					LIMIT 1
+				),
+				(
+					SELECT image_url
+					FROM cartoon_images
+					WHERE cartoon_images.cartoon_id = cartoons.id
+					AND LOWER(image_type) = 'poster'
+					LIMIT 1
+				)
+			) AS thumbnail
+		`).
+		Scan(&result).Error
+
+	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to fetch cartoons"})
 		return
 	}
 
-	c.JSON(200, gin.H{"cartoons": cartoons})
+	c.JSON(200, gin.H{
+		"cartoons": result,
+	})
 }
 
 func GetCharactersByCartoon(c *gin.Context) {
 	cartoonID := c.Param("cartoon_id")
 
 	var characters []models.Character
-	if err := db.DB.Where("cartoon_id = ?", cartoonID).Find(&characters).Error; err != nil {
+	if err := db.DB.
+		Where("cartoon_id = ?", cartoonID).
+		Find(&characters).Error; err != nil {
+
 		c.JSON(500, gin.H{"error": "Failed to fetch characters"})
 		return
 	}
 
-	c.JSON(200, gin.H{"characters": characters})
+	c.JSON(200, gin.H{
+		"characters": characters,
+	})
 }
 
 /* =========================================================
