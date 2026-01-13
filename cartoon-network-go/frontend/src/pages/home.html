@@ -1,21 +1,69 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Cartoon Network Home</title>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <title>Cartoon Network – Home</title>
+    <link rel="stylesheet" href="../css/home.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="logo">
+        <img src="../../images/cn-logo.svg" class="logo-svg" />
+      </div>
+      <div class="search-box">
+        <input id="searchInput" placeholder="Search cartoons..." />
+        <button onclick="doSearch()">Search</button>
+      </div>
 
-  <h1>Welcome to Cartoon Network 🎉</h1>
-  <p>You are logged in successfully.</p>
+      <div class="nav-actions">
+        <button onclick="window.location.href='genres.html'">Genres</button>
 
-  <button onclick="logout()">Logout</button>
+        <button onclick="window.location.href='favourites.html'">
+          Fav Cartoons
+        </button>
 
-<script>
-function logout(){
-  localStorage.removeItem("token");
-  window.location.href = "index.html";
-}
-</script>
+        <button onclick="window.location.href='timings.html'">
+          Show Timings
+        </button>
 
-</body>
+        <button class="nav-btn" onclick="openAllCartoons()">
+          All Cartoons
+        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section
+      class="banner"
+      style="background-image: url('../../images/home-banner.jpeg')"
+    ></section>
+
+    <!-- CARTOON GRID -->
+    <section class="cartoon-section">
+      <div class="welcome-text">
+        <h1>Welcome to Cartoon Network</h1>
+        <p>Have a look at your Nostalgic Cartoons</p>
+      </div>
+      <h2 class="section-title">🔥 Trending Now</h2>
+      <div class="cartoon-grid" id="trendingGrid"></div>
+
+      <h3>All Cartoons</h3>
+      <div class="cartoon-grid" id="cartoonGrid"></div>
+    </section>
+
+    <script src="../js/home.js"></script>
+
+    <script>
+      function openAllCartoons() {
+        window.location.href = "all-cartoons.html";
+      }
+    </script>
+
+    <script>
+      function logout() {
+        localStorage.removeItem("token");
+        window.location.href = "index.html";
+      }
+    </script>
+  </body>
 </html>

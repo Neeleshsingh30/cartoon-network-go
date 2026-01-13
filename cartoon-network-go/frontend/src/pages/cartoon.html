@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cartoon Details</title>
+  <link rel="stylesheet" href="../css/cartoon.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <img src="../../images/cn-logo.svg" class="logo-svg" 
+       onclick="window.location.href='home.html'">
+
+  <button class="back-btn" 
+          onclick="window.location.href='home.html'">
+    ⬅ Back
+  </button>
+</header>
+
+<!-- Banner -->
+<section class="detail-banner">
+  <img id="bannerImg" src="" alt="banner">
+</section>
+<button id="favBtn" class="fav-btn" onclick="toggleFavourite()">🤍</button>
+
+<!-- Main Info -->
+<section class="cartoon-info" id="cartoonInfo"></section>
+
+<!-- Rating / Air Date / Show Time -->
+<div class="rating-box" id="ratingBox"></div>
+
+<!-- Characters -->
+<h2 class="section-title">Characters</h2>
+<table class="char-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Role</th>
+      <th>Power</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody id="charTable"></tbody>
+</table>
+
+<!-- Recommendations -->
+<h2 class="section-title">Recommended For You</h2>
+<div class="recommend-grid" id="recommendGrid"></div>
+
+<script src="../js/cartoon.js"></script>
+
+</body>
+</html>

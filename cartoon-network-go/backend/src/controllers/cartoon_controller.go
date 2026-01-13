@@ -15,7 +15,7 @@ import (
 )
 
 /* ===== HOMEPAGE CARTOONS (CACHED + CONCURRENT) ===== */
-func GetAllCartoons(c *gin.Context) {
+func GetHomeCartoons(c *gin.Context) {
 	cartoons := cache.GetHomeCache()
 	c.JSON(http.StatusOK, cartoons)
 }
@@ -29,17 +29,32 @@ func GetCartoonByID(c *gin.Context) {
 	c.JSON(http.StatusOK, cartoon)
 }
 
-/* ===== LIKE CARTOON (ASYNC) ===== */
+/* ===== LIKE CARTOON (SYNC) ===== */
 func LikeCartoon(c *gin.Context) {
 	cartoonID, _ := strconv.Atoi(c.Param("id"))
 	userID := c.GetUint("user_id")
 
-	worker.JobQueue <- worker.Job{
-		Type: "LIKE",
-		Data: &models.Like{CartoonID: uint(cartoonID), UserID: userID},
+	like := models.Like{
+		CartoonID: uint(cartoonID),
+		UserID:    userID,
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Like queued"})
+	// ignore if already exists
+	db.DB.Where("cartoon_id = ? AND user_id = ?", cartoonID, userID).
+		FirstOrCreate(&like)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Liked"})
+}
+
+func UnlikeCartoon(c *gin.Context) {
+	cartoonID, _ := strconv.Atoi(c.Param("id"))
+	userID := c.GetUint("user_id")
+
+	db.DB.
+		Where("cartoon_id = ? AND user_id = ?", cartoonID, userID).
+		Delete(&models.Like{})
+
+	c.JSON(http.StatusOK, gin.H{"message": "Unliked"})
 }
 
 /* ===== ADD VIEW (ASYNC) ===== */
@@ -73,7 +88,11 @@ func GetUserFavourites(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
 	var likes []models.Like
-	db.DB.Preload("Cartoon").Where("user_id = ?", userID).Find(&likes)
+	db.DB.
+		Preload("Cartoon").
+		Preload("Cartoon.Images").
+		Where("user_id = ?", userID).
+		Find(&likes)
 
 	c.JSON(http.StatusOK, likes)
 }
@@ -91,20 +110,28 @@ func GetCartoonViewCount(c *gin.Context) {
 }
 
 func GetShowTimings(c *gin.Context) {
-	cartoons := cache.GetShowTimeCache()
+	var cartoons []models.Cartoon
+	db.DB.Preload("Images").Order("show_time").Find(&cartoons)
 	c.JSON(http.StatusOK, cartoons)
 }
 
 func SearchCartoons(c *gin.Context) {
-	query := c.Query("q")
+	query := strings.TrimSpace(c.Query("query"))
+
+	if query == "" {
+		c.JSON(http.StatusOK, []models.Cartoon{})
+		return
+	}
 
 	var cartoons []models.Cartoon
+
 	db.DB.Preload("Images").
 		Where("name ILIKE ?", "%"+query+"%").
 		Find(&cartoons)
 
 	c.JSON(http.StatusOK, cartoons)
 }
+
 func GetPaginatedCartoons(c *gin.Context) {
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -121,23 +148,36 @@ func GetPaginatedCartoons(c *gin.Context) {
 }
 
 func GetTrendingCartoons(c *gin.Context) {
-	var cartoons []models.Cartoon
+
+	type Result struct {
+		models.Cartoon
+		ViewCount int `json:"view_count"`
+	}
+
+	var results []Result
 
 	db.DB.Raw(`
-		SELECT cartoons.*
+		SELECT cartoons.*, COUNT(cartoon_views.id) AS view_count
 		FROM cartoons
 		JOIN cartoon_views ON cartoons.id = cartoon_views.cartoon_id
 		GROUP BY cartoons.id
-		ORDER BY COUNT(cartoon_views.id) DESC
-		LIMIT 5
-	`).Scan(&cartoons)
+		ORDER BY view_count DESC
+		LIMIT 10
+	`).Scan(&results)
 
-	c.JSON(http.StatusOK, cartoons)
+	// preload images manually
+	for i := range results {
+		var images []models.CartoonImage
+		db.DB.Where("cartoon_id = ?", results[i].ID).Find(&images)
+		results[i].Images = images
+	}
+
+	c.JSON(http.StatusOK, results)
 }
 func GetCartoonsByAgeGroup(c *gin.Context) {
 
 	var cartoons []models.Cartoon
-	db.DB.Find(&cartoons)
+	db.DB.Preload("Images").Find(&cartoons) // 👈 preload images
 
 	result := make(map[string][]models.Cartoon)
 
@@ -166,10 +206,12 @@ func GetCartoonsByAgeGroup(c *gin.Context) {
 }
 
 func GetCartoonsByGenre(c *gin.Context) {
+
 	var cartoons []models.Cartoon
-	db.DB.Find(&cartoons)
+	db.DB.Preload("Images").Find(&cartoons) // 👈 preload images
 
 	result := make(map[string][]models.Cartoon)
+
 	for _, ctoon := range cartoons {
 		result[ctoon.Genre] = append(result[ctoon.Genre], ctoon)
 	}
@@ -185,10 +227,11 @@ func GetRecommendedCartoons(c *gin.Context) {
 
 	var cartoons []models.Cartoon
 	db.DB.
+		Preload("Images"). // 🔥 THIS WAS MISSING
 		Where("id != ?", current.ID).
 		Where("genre = ?", current.Genre).
 		Order("imdb_rating DESC").
-		Limit(5).
+		Limit(10).
 		Find(&cartoons)
 
 	c.JSON(http.StatusOK, cartoons)

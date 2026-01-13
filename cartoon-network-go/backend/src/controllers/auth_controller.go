@@ -8,8 +8,6 @@ import (
 
 	"time"
 
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -58,8 +56,7 @@ func Signup(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Signup successful"})
 }
 
-/* ===== Login API ===== */
-var jwtKey = []byte(os.Getenv("JWT_SECRET"))
+var jwtKey = []byte("secret_cartoon_key")
 
 type LoginInput struct {
 	Username string `json:"username"`
@@ -96,5 +93,4 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"access_token": tokenString,
 	})
-
 }
