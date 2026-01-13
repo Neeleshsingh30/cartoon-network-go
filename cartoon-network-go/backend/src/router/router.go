@@ -16,7 +16,6 @@ func SetupRouter() *gin.Engine {
 	// =========================================
 	// 🔥 STATIC FILE SERVING (UPLOADS)
 	// =========================================
-	// Folder must exist: backend/uploads
 	r.Static("/uploads", "./uploads")
 
 	// =========================================
@@ -38,9 +37,7 @@ func SetupRouter() *gin.Engine {
 	// HEALTH CHECK
 	// =========================================
 	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status": "Backend running",
-		})
+		c.JSON(200, gin.H{"status": "Backend running"})
 	})
 
 	// =========================================
@@ -80,8 +77,16 @@ func SetupRouter() *gin.Engine {
 		admin.POST("/cartoon/:cartoon_id/character", controllers.AddCharacter)
 		admin.GET("/cartoon/:cartoon_id/characters", controllers.GetCharactersByCartoon)
 
-		// ================= IMAGE UPLOAD =================
-		admin.POST("/upload-image", controllers.UploadImage)
+		// 🔥 NEW → DELETE CHARACTER
+		admin.DELETE("/character/:id", controllers.DeleteCharacter)
+
+		// ================= IMAGES =================
+
+		// 🔥 NEW → Upload Thumbnail / Banner / Poster
+		admin.POST("/cartoon/upload-image", controllers.UploadCartoonImage)
+
+		// 🔥 NEW → Delete Cartoon Image
+		admin.DELETE("/cartoon/image/:id", controllers.DeleteCartoonImage)
 
 		// ================= LOGS =================
 		admin.GET("/logs", controllers.GetAdminLogs)
@@ -95,7 +100,7 @@ func SetupRouter() *gin.Engine {
 			controllers.GetAllAdmins,
 		)
 
-		// 🔐 CREATE ADMIN (role check handled in controller)
+		// 🔐 CREATE ADMIN
 		admin.POST("/create-admin", controllers.CreateAdmin)
 
 		// 🔐 SUPER ADMIN ONLY → DELETE ADMIN

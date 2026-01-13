@@ -7,7 +7,7 @@
 <body>
 
 <header class="top-bar">
-  <h2>CN Admin Dashboard– Manage Cartoons</h2>
+  <h2>CN Admin – Manage Cartoons</h2>
   <div>
     <button onclick="goDashboard()">Dashboard</button>
     <button class="logout" onclick="logout()">Logout</button>
@@ -17,33 +17,62 @@
 <div class="container">
 
   <!-- ADD CARTOON -->
-  <section class="card">
-    <h3>Add New Cartoon</h3>
+<!-- ADD CARTOON -->
+<section class="card">
+  <h3>Add Cartoon</h3>
 
-    <input id="cartoonName" placeholder="Cartoon Name">
-    <input id="genre" placeholder="Genre">
-    <input id="ageGroup" placeholder="Age Group">
-    <textarea id="description" placeholder="Description"></textarea>
+<input id="name" placeholder="Cartoon Name">
 
-    <input type="file" id="cartoonImage">
-    <button onclick="addCartoon()">Add Cartoon</button>
-  </section>
+<input id="genre" placeholder="Genre">
+<input id="age_group" placeholder="Age Group (7+, 10+)">
+<input id="universe" placeholder="Universe (Indian, DC)">
+<input id="show_time" placeholder="Show Time (3:00 PM)">
+<input id="imdb_rating" type="number" step="0.1" placeholder="IMDB Rating">
+<input id="air_date" type="date">
+<textarea id="description" placeholder="Description"></textarea>
+
+
+  <button onclick="addCartoon()">Add Cartoon</button>
+</section>
+
+  <!-- UPLOAD IMAGE -->
+<section class="card">
+  <h3>Upload Cartoon Image</h3>
+
+  <input type="number" id="imgCartoonId" placeholder="Cartoon ID">
+<select id="imgType">
+  <option value="">Select Image Type</option>
+  <option value="thumbnail">Thumbnail</option>
+  <option value="banner">Banner</option>
+  <option value="poster">Poster</option>
+</select>
+
+
+  <input
+    type="text"
+    id="imgUrl"
+    placeholder="Paste Public Image URL"
+  />
+
+  <button onclick="uploadCartoonImage()">Upload Image</button>
+</section>
+
 
   <!-- ADD CHARACTER -->
-  <section class="card">
+  <div class="card">
     <h3>Add Character</h3>
 
-    <select id="cartoonSelect"></select>
-    <input id="charName" placeholder="Character Name">
-    <input id="charRole" placeholder="Role (Hero/Villain)">
-    <input id="charPower" placeholder="Power">
-    <textarea id="charDesc" placeholder="Description"></textarea>
+    <input id="char_cartoon_id" placeholder="Cartoon ID">
+    <input id="char_name" placeholder="Character Name">
+    <input id="char_role" placeholder="Role (Hero / Villain)">
+    <input id="char_power" placeholder="Power">
+    <textarea id="char_description" placeholder="Description"></textarea>
 
     <button onclick="addCharacter()">Add Character</button>
-  </section>
+  </div>
 
-  <!-- CARTOON TABLE -->
-  <section class="card">
+  <!-- ALL CARTOONS -->
+  <div class="card">
     <h3>All Cartoons</h3>
     <table>
       <thead>
@@ -56,7 +85,7 @@
       </thead>
       <tbody id="cartoonTable"></tbody>
     </table>
-  </section>
+  </div>
 
 </div>
 
