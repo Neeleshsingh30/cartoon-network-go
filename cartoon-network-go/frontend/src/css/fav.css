@@ -1,0 +1,54 @@
+body {
+  margin: 0;
+  background: #0f172a;
+  color: white;
+  font-family: Segoe UI;
+}
+
+
+.top-bar {
+  height:60px;
+  background:black;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 25px;
+}
+.logo-svg { height:38px; }
+
+h1 {
+  margin: 25px;
+}
+
+/* GRID LAYOUT */
+.fav-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 22px;
+  padding: 25px;
+}
+
+/* CARD */
+.fav-card {
+  background: #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.fav-card:hover {
+  transform: scale(1.35);
+}
+
+.fav-card img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.fav-card p {
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}

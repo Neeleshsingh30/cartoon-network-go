@@ -29,7 +29,7 @@ async function loadFavourites(){
     const data = await res.json();
     console.log("FAV DATA =>", data);
 
-     const grid = document.getElementById("favList");    
+     const grid = document.getElementById("favGrid");    
      grid.innerHTML = "";
 
     if(!Array.isArray(data) || data.length === 0){
