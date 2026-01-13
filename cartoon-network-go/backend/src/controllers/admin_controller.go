@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"net/http"
 	"os"
 	"strconv"
 	"time"
@@ -91,15 +90,47 @@ func AdminLogin(c *gin.Context) {
 ========================================================= */
 
 func AddCartoon(c *gin.Context) {
-	var cartoon models.Cartoon
 
-	if err := c.ShouldBindJSON(&cartoon); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cartoon data"})
+	type AddCartoonInput struct {
+		Name        string  `json:"name"`
+		Description string  `json:"description"`
+		Genre       string  `json:"genre"`
+		AgeGroup    string  `json:"age_group"`
+		Universe    string  `json:"universe"`
+		ShowTime    string  `json:"show_time"`
+		ImdbRating  float32 `json:"imdb_rating"`
+		AirDate     string  `json:"air_date"` // frontend se string
+	}
+
+	var input AddCartoonInput
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid input"})
 		return
 	}
 
+	// ✅ Parse air_date safely
+	var airDate time.Time
+	if input.AirDate != "" {
+		parsedDate, err := time.Parse("2006-01-02", input.AirDate)
+		if err == nil {
+			airDate = parsedDate
+		}
+	}
+
+	cartoon := models.Cartoon{
+		Name:        input.Name,
+		Description: input.Description,
+		Genre:       input.Genre,
+		AgeGroup:    input.AgeGroup,
+		Universe:    input.Universe,
+		ShowTime:    input.ShowTime,
+		ImdbRating:  input.ImdbRating,
+		AirDate:     airDate,
+	}
+
 	if err := db.DB.Create(&cartoon).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Cartoon already exists"})
+		c.JSON(500, gin.H{"error": "Failed to add cartoon"})
 		return
 	}
 
@@ -107,35 +138,39 @@ func AddCartoon(c *gin.Context) {
 		Action: "Added Cartoon: " + cartoon.Name,
 	})
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(201, gin.H{
 		"message": "Cartoon added successfully",
 		"cartoon": cartoon,
 	})
 }
 
 /* =========================================================
-   DELETE CARTOON
+   DELETE CARTOON (FULL CLEANUP ✅)
 ========================================================= */
 
 func DeleteCartoon(c *gin.Context) {
 	id := c.Param("id")
 
-	cartoonID, err := strconv.Atoi(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cartoon ID"})
+	var cartoon models.Cartoon
+	if err := db.DB.First(&cartoon, id).Error; err != nil {
+		c.JSON(404, gin.H{"error": "Cartoon not found"})
 		return
 	}
 
-	if err := db.DB.Delete(&models.Cartoon{}, cartoonID).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete cartoon"})
-		return
-	}
+	// 🔥 Delete characters
+	db.DB.Where("cartoon_id = ?", cartoon.ID).Delete(&models.Character{})
+
+	// 🔥 Delete images (thumbnail/banner/poster)
+	db.DB.Where("cartoon_id = ?", cartoon.ID).Delete(&models.CartoonImage{})
+
+	// 🔥 Delete cartoon
+	db.DB.Delete(&cartoon)
 
 	db.DB.Create(&models.AdminActivityLog{
-		Action: "Deleted Cartoon ID: " + id,
+		Action: "Deleted Cartoon: " + cartoon.Name,
 	})
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(200, gin.H{
 		"message": "Cartoon deleted successfully",
 	})
 }
@@ -183,57 +218,154 @@ func AddCharacter(c *gin.Context) {
 }
 
 /* =========================================================
-   GET CARTOONS & CHARACTERS
+   GET CHARACTERS BY CARTOON  ✅ (MISSING FUNCTION)
 ========================================================= */
-
-func GetAllCartoons(c *gin.Context) {
-	var cartoons []models.Cartoon
-
-	if err := db.DB.Preload("Characters").Find(&cartoons).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Failed to fetch cartoons"})
-		return
-	}
-
-	c.JSON(200, gin.H{"cartoons": cartoons})
-}
 
 func GetCharactersByCartoon(c *gin.Context) {
 	cartoonID := c.Param("cartoon_id")
 
 	var characters []models.Character
-	if err := db.DB.Where("cartoon_id = ?", cartoonID).Find(&characters).Error; err != nil {
-		c.JSON(500, gin.H{"error": "Failed to fetch characters"})
+	if err := db.DB.
+		Where("cartoon_id = ?", cartoonID).
+		Find(&characters).Error; err != nil {
+
+		c.JSON(500, gin.H{
+			"error": "Failed to fetch characters",
+		})
 		return
 	}
 
-	c.JSON(200, gin.H{"characters": characters})
+	c.JSON(200, gin.H{
+		"characters": characters,
+	})
 }
 
 /* =========================================================
-   UPLOAD IMAGE
+   DELETE CHARACTER ✅ (NEW)
 ========================================================= */
 
-func UploadImage(c *gin.Context) {
-	file, err := c.FormFile("image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Image file required"})
+func DeleteCharacter(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := db.DB.Delete(&models.Character{}, id).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete character"})
 		return
 	}
 
-	imageURL := "https://supabase.fake.url/" + file.Filename
-
 	db.DB.Create(&models.AdminActivityLog{
-		Action: "Uploaded Image: " + file.Filename,
+		Action: "Deleted Character ID: " + id,
 	})
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":   "Image uploaded successfully",
-		"image_url": imageURL,
+	c.JSON(200, gin.H{
+		"message": "Character deleted successfully",
 	})
 }
 
 /* =========================================================
-   ADMIN ACTIVITY LOGS
+   GET CARTOONS WITH THUMBNAIL
+========================================================= */
+
+func GetAllCartoons(c *gin.Context) {
+	type CartoonResponse struct {
+		ID        uint   `json:"id"`
+		Name      string `json:"name"`
+		Thumbnail string `json:"thumbnail"`
+	}
+
+	var result []CartoonResponse
+
+	err := db.DB.
+		Table("cartoons").
+		Select(`
+			cartoons.id,
+			cartoons.name,
+			COALESCE(
+				(
+					SELECT image_url
+					FROM cartoon_images
+					WHERE cartoon_images.cartoon_id = cartoons.id
+					AND LOWER(image_type) = 'thumbnail'
+					LIMIT 1
+				),
+				(
+					SELECT image_url
+					FROM cartoon_images
+					WHERE cartoon_images.cartoon_id = cartoons.id
+					AND LOWER(image_type) = 'poster'
+					LIMIT 1
+				)
+			) AS thumbnail
+		`).
+		Scan(&result).Error
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to fetch cartoons"})
+		return
+	}
+
+	c.JSON(200, gin.H{"cartoons": result})
+}
+
+/*
+	=========================================================
+	  UPLOAD CARTOON IMAGE (thumbnail/banner/poster) ✅
+
+=========================================================
+*/
+type UploadImageInput struct {
+	CartoonID uint   `json:"cartoon_id"`
+	ImageType string `json:"image_type"` // thumbnail | banner | poster
+	ImageURL  string `json:"image_url"`
+}
+
+func UploadCartoonImage(c *gin.Context) {
+	var input UploadImageInput
+
+	// ✅ JSON read karo
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON"})
+		return
+	}
+
+	if input.ImageType == "" {
+		c.JSON(400, gin.H{"error": "image_type required"})
+		return
+	}
+
+	image := models.CartoonImage{
+		CartoonID: input.CartoonID,
+		ImageURL:  input.ImageURL,
+		ImageType: input.ImageType,
+	}
+
+	db.DB.Create(&image)
+
+	c.JSON(200, gin.H{
+		"message": "Image uploaded successfully",
+	})
+}
+
+/* =========================================================
+   DELETE CARTOON IMAGE (thumbnail/banner) ✅
+========================================================= */
+
+func DeleteCartoonImage(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := db.DB.Delete(&models.CartoonImage{}, id).Error; err != nil {
+		c.JSON(500, gin.H{"error": "Failed to delete image"})
+		return
+	}
+
+	db.DB.Create(&models.AdminActivityLog{
+		Action: "Deleted Cartoon Image ID: " + id,
+	})
+
+	c.JSON(200, gin.H{"message": "Image deleted successfully"})
+}
+
+/* =========================================================
+   ADMIN LOGS
 ========================================================= */
 
 func GetAdminLogs(c *gin.Context) {
@@ -243,17 +375,15 @@ func GetAdminLogs(c *gin.Context) {
 		Order("created_at desc").
 		Find(&logs)
 
-	c.JSON(http.StatusOK, gin.H{
-		"logs": logs,
-	})
+	c.JSON(200, gin.H{"logs": logs})
 }
 
-/* ================= CREATE ADMIN ================= */
+/* ================= CREATE / DELETE ADMIN ================= */
 
 type CreateAdminInput struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role     string `json:"role"` // admin / super_admin
+	Role     string `json:"role"`
 }
 
 func CreateAdmin(c *gin.Context) {
@@ -264,21 +394,12 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	hashedPassword, err := hashPassword(input.Password)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Password hashing failed"})
-		return
-	}
-
-	role := "admin"
-	if input.Role != "" {
-		role = input.Role
-	}
+	hashedPassword, _ := hashPassword(input.Password)
 
 	admin := models.Admin{
 		Username: input.Username,
 		Password: hashedPassword,
-		Role:     role,
+		Role:     input.Role,
 	}
 
 	if err := db.DB.Create(&admin).Error; err != nil {
@@ -286,24 +407,8 @@ func CreateAdmin(c *gin.Context) {
 		return
 	}
 
-	creatorID := c.GetUint("admin_id")
-
-	db.DB.Create(&models.AdminActivityLog{
-		AdminID: creatorID,
-		Action:  "Created Admin: " + admin.Username,
-	})
-
-	c.JSON(201, gin.H{
-		"message": "Admin created successfully",
-		"admin": gin.H{
-			"id":       admin.ID,
-			"username": admin.Username,
-			"role":     admin.Role,
-		},
-	})
+	c.JSON(201, gin.H{"message": "Admin created successfully"})
 }
-
-/* ================= DELETE ADMIN ================= */
 
 func DeleteAdmin(c *gin.Context) {
 	id := c.Param("id")
@@ -320,10 +425,12 @@ func DeleteAdmin(c *gin.Context) {
 	}
 
 	db.DB.Delete(&admin)
-
-	db.DB.Create(&models.AdminActivityLog{
-		Action: "Deleted Admin: " + admin.Username,
-	})
-
 	c.JSON(200, gin.H{"message": "Admin deleted successfully"})
+}
+
+func GetAllAdmins(c *gin.Context) {
+	var admins []models.Admin
+
+	db.DB.Select("id, username, role").Find(&admins)
+	c.JSON(200, gin.H{"admins": admins})
 }

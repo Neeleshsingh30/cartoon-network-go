@@ -35,12 +35,10 @@ type Cartoon struct {
 
 /* CARTOON IMAGES */
 type CartoonImage struct {
-	ID        uint `gorm:"primaryKey"`
-	CartoonID uint
-	ImageURL  string
-	ImageType string
-
-	Cartoon Cartoon `gorm:"foreignKey:CartoonID"`
+	ID        uint   `gorm:"primaryKey" json:"id"`
+	CartoonID uint   `json:"cartoon_id"`
+	ImageURL  string `json:"image_url"`
+	ImageType string `json:"image_type"` // thumbnail | banner | poster
 }
 
 /* CHARACTERS */
@@ -78,10 +76,10 @@ type CartoonView struct {
 
 /* ADMINS */
 type Admin struct {
-	ID       uint   `gorm:"primaryKey"`
-	Username string `gorm:"unique"`
-	Password string
-	Role     string // "admin" or "super_admin"
+	ID       uint   `gorm:"primaryKey" json:"id"`
+	Username string `gorm:"unique" json:"username"`
+	Password string `json:"-"` // 🔒 never expose
+	Role     string `json:"role"`
 
 	Logs []AdminActivityLog `gorm:"foreignKey:AdminID"`
 }

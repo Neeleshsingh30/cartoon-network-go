@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login | Cartoon Network</title>
+  <link rel="stylesheet" href="../css/admin_auth.css">
+</head>
+
+<body class="bg">
+
+  <!-- Back to User Login -->
+  <div class="admin-login">
+    <a href="index.html">User Login</a>
+  </div>
+
+  <div class="overlay">
+    <div class="layout">
+
+      <div class="auth-box">
+        <h2>Admin Login</h2>
+
+        <input id="username" placeholder="Admin Username">
+        <input id="password" type="password" placeholder="Password">
+
+        <button onclick="adminLogin()">Login</button>
+        <p id="error"></p>
+      </div>
+
+    </div>
+  </div>
+
+<script src="../js/admin_auth.js"></script>
+</body>
+</html>

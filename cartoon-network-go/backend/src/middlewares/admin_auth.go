@@ -2,19 +2,24 @@ package middlewares
 
 import (
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// ✅ MUST MATCH admin_controller.go
-var JwtSecret = []byte("cartoon_network_secret")
+// ✅ SAME SECRET SOURCE AS CONTROLLER
+func getJWTSecret() []byte {
+	if os.Getenv("JWT_SECRET") != "" {
+		return []byte(os.Getenv("JWT_SECRET"))
+	}
+	return []byte("cartoon_network_secret")
+}
 
 func AdminAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		// 1️⃣ Read Authorization header
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
@@ -22,7 +27,6 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 2️⃣ Expect: Bearer <token>
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization format"})
@@ -32,12 +36,8 @@ func AdminAuth() gin.HandlerFunc {
 
 		tokenString := parts[1]
 
-		// 3️⃣ Parse & validate token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.ErrSignatureInvalid
-			}
-			return JwtSecret, nil
+			return getJWTSecret(), nil
 		})
 
 		if err != nil || !token.Valid {
@@ -46,7 +46,6 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 4️⃣ Extract claims safely
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
@@ -54,9 +53,23 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 5️⃣ Store in context (request scoped)
-		c.Set("admin_id", claims["admin_id"])
-		c.Set("role", claims["role"])
+		// ✅ TYPE SAFE CASTING
+		adminIDFloat, ok := claims["admin_id"].(float64)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin_id"})
+			c.Abort()
+			return
+		}
+
+		role, ok := claims["role"].(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid role"})
+			c.Abort()
+			return
+		}
+
+		c.Set("admin_id", uint(adminIDFloat))
+		c.Set("role", role)
 
 		c.Next()
 	}
@@ -66,7 +79,7 @@ func SuperAdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("role")
 
-		if !exists || role != "super_admin" {
+		if !exists || role.(string) != "super_admin" {
 			c.JSON(http.StatusForbidden, gin.H{
 				"error": "Only super admin can perform this action",
 			})
@@ -76,12 +89,4 @@ func SuperAdminOnly() gin.HandlerFunc {
 
 		c.Next()
 	}
-}
-
-func GetAdminIDFromContext(c *gin.Context) uint {
-	adminID, exists := c.Get("admin_id")
-	if !exists {
-		return 0
-	}
-	return adminID.(uint)
 }

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Manage Cartoons</title>
+  <link rel="stylesheet" href="../css/manage_cartoon.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <h2>CN Admin – Manage Cartoons</h2>
+  <div>
+    <button onclick="goDashboard()">Dashboard</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ADD CARTOON -->
+<!-- ADD CARTOON -->
+<section class="card">
+  <h3>Add Cartoon</h3>
+
+<input id="name" placeholder="Cartoon Name">
+
+<input id="genre" placeholder="Genre">
+<input id="age_group" placeholder="Age Group (7+, 10+)">
+<input id="universe" placeholder="Universe (Indian, DC)">
+<input id="show_time" placeholder="Show Time (3:00 PM)">
+<input id="imdb_rating" type="number" step="0.1" placeholder="IMDB Rating">
+<input id="air_date" type="date">
+<textarea id="description" placeholder="Description"></textarea>
+
+
+  <button onclick="addCartoon()">Add Cartoon</button>
+</section>
+
+  <!-- UPLOAD IMAGE -->
+<section class="card">
+  <h3>Upload Cartoon Image</h3>
+
+  <input type="number" id="imgCartoonId" placeholder="Cartoon ID">
+<select id="imgType">
+  <option value="">Select Image Type</option>
+  <option value="thumbnail">Thumbnail</option>
+  <option value="banner">Banner</option>
+  <option value="poster">Poster</option>
+</select>
+
+
+  <input
+    type="text"
+    id="imgUrl"
+    placeholder="Paste Public Image URL"
+  />
+
+  <button onclick="uploadCartoonImage()">Upload Image</button>
+</section>
+
+
+  <!-- ADD CHARACTER -->
+  <div class="card">
+    <h3>Add Character</h3>
+
+    <input id="char_cartoon_id" placeholder="Cartoon ID">
+    <input id="char_name" placeholder="Character Name">
+    <input id="char_role" placeholder="Role (Hero / Villain)">
+    <input id="char_power" placeholder="Power">
+    <textarea id="char_description" placeholder="Description"></textarea>
+
+    <button onclick="addCharacter()">Add Character</button>
+  </div>
+
+  <!-- ALL CARTOONS -->
+  <div class="card">
+    <h3>All Cartoons</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Thumbnail</th>
+          <th>Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="cartoonTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="../js/manage_cartoon.js"></script>
+</body>
+</html>
