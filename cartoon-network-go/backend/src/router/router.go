@@ -120,6 +120,7 @@ func SetupRouter() *gin.Engine {
 		auth.GET("/user/history", controllers.GetUserHistory)
 		auth.GET("/user/favourites", controllers.GetUserFavourites)
 		auth.POST("/cartoon/:id/like", controllers.LikeCartoon)
+		auth.DELETE("/cartoon/:id/like", controllers.UnlikeCartoon)
 		auth.POST("/cartoon/:id/view", controllers.AddView)
 	}
 
