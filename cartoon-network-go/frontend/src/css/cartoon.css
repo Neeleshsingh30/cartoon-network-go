@@ -19,9 +19,19 @@ body {
 
 /* Banner */
 .detail-banner {
-  height:350px;
-  background-size:cover;
-  background-position:center;
+  width: 100%;
+  height: 350px;
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.detail-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* 🔥 IMAGE FULLY VISIBLE – NO CUT */
 }
 
 /* Cartoon Info */
@@ -87,8 +97,8 @@ body {
 }
 
 .recommend-card {
-  min-width:260px;
-  max-width:260px;
+  min-width:auto;
+  max-width:auto;
   background:#1e293b;
   border-radius:10px;
   overflow:hidden;
@@ -97,13 +107,13 @@ body {
 }
 
 .recommend-card:hover {
-  transform:scale(1.50);
+  transform:scale(1.30);
 }
 
 .recommend-card img {
   width:100%;
-  height:100px;
-  object-fit:cover;
+  height:250px;
+  object-fit:fill;
 }
 
 .recommend-card p {

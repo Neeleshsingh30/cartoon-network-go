@@ -20,10 +20,11 @@ async function loadCartoon(){
   const res = await fetch(`${BASE_URL}/cartoon/${id}`);
   const data = await res.json();
 
-  const banner = data.Images?.find(i => i.ImageType === "banner")?.ImageURL;
-  if(banner){
-    document.getElementById("banner").style.backgroundImage = `url(${banner})`;
-  }
+ const banner = data.Images?.find(i => i.ImageType === "banner")?.ImageURL;
+if (banner) {
+  document.getElementById("bannerImg").src = banner;
+}
+
 
   document.getElementById("cartoonInfo").innerHTML = `
     <div class="info-box">Description: ${data.Description}</div>
