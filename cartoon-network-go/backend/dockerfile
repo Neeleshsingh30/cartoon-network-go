@@ -5,11 +5,10 @@ RUN apk add --no-cache git
 WORKDIR /app
 
 # Copy go mod files first (better caching)
-COPY backend/src/go.mod backend/src/go.sum ./
+COPY src/go.mod src/go.sum ./
 RUN go mod download
+COPY src/ .
 
-# Copy entire backend source into /app
-COPY backend/src/ .
 
 # Build Go binary
 RUN go build -o app .
