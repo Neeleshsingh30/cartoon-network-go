@@ -25,14 +25,25 @@ async function loadHomeCartoons() {
     const grid = document.getElementById("cartoonGrid");
     grid.innerHTML = "";
 
-    data.forEach(c => {
-      let thumb = "../../images/CN-BG-AUTH.jpg";
+   data.forEach(c => {
 
-      if(c.Images && c.Images.length){
-        const img = c.Images.find(i => i.ImageType === "thumbnail")
-                 || c.Images.find(i => i.ImageType === "poster");
-        if(img) thumb = img.ImageURL;
-      }
+  console.log("FULL CARTOON:", c);
+  console.log("IMAGES ARRAY:", c.Images);
+
+  let thumb = "/src/images/CN-BG-AUTH.jpg";
+
+  if (c.Images && c.Images.length) {
+    console.log("FIRST IMAGE OBJ:", c.Images[0]);
+  }
+
+      if (c.Images && c.Images.length) {
+  const img =
+    c.Images.find(i => i.image_type === "thumbnail") ||
+    c.Images.find(i => i.image_type === "poster");
+
+  if (img && img.image_url) thumb = img.image_url;
+}
+
 
       const card = document.createElement("div");
       card.className = "cartoon-card";
@@ -85,14 +96,24 @@ async function loadTrendingCartoons(){
     const grid = document.getElementById("trendingGrid");
     grid.innerHTML = "";
 
-    data.forEach(c => {
-      let thumb = "../../images/CN-BG-AUTH.jpg";
+     data.forEach(c => {
 
-      if(c.Images && c.Images.length){
-        const img = c.Images.find(i => i.ImageType === "thumbnail") 
-               || c.Images.find(i => i.ImageType === "poster");
-        if(img) thumb = img.ImageURL;
-      }
+  console.log("FULL CARTOON:", c);
+  console.log("IMAGES ARRAY:", c.Images);
+
+  let thumb = "/src/images/CN-BG-AUTH.jpg";
+
+  if (c.Images && c.Images.length) {
+    console.log("FIRST IMAGE OBJ:", c.Images[0]);
+  }
+
+      if (c.Images && c.Images.length) {
+  const img =
+    c.Images.find(i => i.image_type === "thumbnail") ||
+    c.Images.find(i => i.image_type === "poster");
+
+  if (img && img.image_url) thumb = img.image_url;
+}
 
       const card = document.createElement("div");
       card.className = "cartoon-card";
