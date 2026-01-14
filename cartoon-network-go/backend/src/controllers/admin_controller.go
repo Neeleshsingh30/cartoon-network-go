@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"cartoon-network-go/backend/src/db"
-	"cartoon-network-go/backend/src/models"
+	"backend/db"
+	"backend/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

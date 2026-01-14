@@ -1,11 +1,11 @@
 package main
 
 import (
-	"cartoon-network-go/backend/src/cache"
-	"cartoon-network-go/backend/src/db"
-	"cartoon-network-go/backend/src/models"
-	"cartoon-network-go/backend/src/router"
-	"cartoon-network-go/backend/src/worker"
+	"backend/cache"
+	"backend/db"
+	"backend/models"
+	"backend/router"
+	"backend/worker"
 
 	"github.com/joho/godotenv"
 )

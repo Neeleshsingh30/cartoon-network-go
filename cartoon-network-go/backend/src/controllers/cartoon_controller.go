@@ -4,10 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"cartoon-network-go/backend/src/cache"
-	"cartoon-network-go/backend/src/db"
-	"cartoon-network-go/backend/src/models"
-	"cartoon-network-go/backend/src/worker"
+	"backend/cache"
+	"backend/db"
+	"backend/models"
+	"backend/worker"
 
 	"strings"
 

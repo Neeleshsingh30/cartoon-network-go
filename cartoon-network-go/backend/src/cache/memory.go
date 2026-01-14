@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"cartoon-network-go/backend/src/db"
-	"cartoon-network-go/backend/src/models"
+	"backend/db"
+	"backend/models"
 )
 
 var (
