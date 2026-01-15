@@ -177,7 +177,7 @@ func GetTrendingCartoons(c *gin.Context) {
 func GetCartoonsByAgeGroup(c *gin.Context) {
 
 	var cartoons []models.Cartoon
-	db.DB.Preload("Images").Find(&cartoons) // 👈 preload images
+	db.DB.Preload("Images").Find(&cartoons) //  preload images
 
 	result := make(map[string][]models.Cartoon)
 
@@ -208,7 +208,7 @@ func GetCartoonsByAgeGroup(c *gin.Context) {
 func GetCartoonsByGenre(c *gin.Context) {
 
 	var cartoons []models.Cartoon
-	db.DB.Preload("Images").Find(&cartoons) // 👈 preload images
+	db.DB.Preload("Images").Find(&cartoons) //  preload images
 
 	result := make(map[string][]models.Cartoon)
 
@@ -227,7 +227,7 @@ func GetRecommendedCartoons(c *gin.Context) {
 
 	var cartoons []models.Cartoon
 	db.DB.
-		Preload("Images"). // 🔥 THIS WAS MISSING
+		Preload("Images"). //  THIS WAS MISSING
 		Where("id != ?", current.ID).
 		Where("genre = ?", current.Genre).
 		Order("imdb_rating DESC").

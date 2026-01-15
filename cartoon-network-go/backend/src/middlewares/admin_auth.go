@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// ✅ SAME SECRET SOURCE AS CONTROLLER
+// SAME SECRET SOURCE AS CONTROLLER
 func getJWTSecret() []byte {
 	if os.Getenv("JWT_SECRET") != "" {
 		return []byte(os.Getenv("JWT_SECRET"))
@@ -53,7 +53,7 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 
-		// ✅ TYPE SAFE CASTING
+		//  TYPE SAFE CASTING
 		adminIDFloat, ok := claims["admin_id"].(float64)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid admin_id"})

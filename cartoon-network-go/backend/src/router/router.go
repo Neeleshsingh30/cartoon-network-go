@@ -73,10 +73,10 @@ func SetupRouter() *gin.Engine {
 	// =========================================
 	admin := r.Group("/admin")
 
-	// 🔓 Admin Login (Public)
+	//  Admin Login (Public)
 	admin.POST("/login", controllers.AdminLogin)
 
-	// 🔐 Protected Admin Routes
+	//  Protected Admin Routes
 	admin.Use(middlewares.AdminAuth())
 	{
 		// ================= CARTOONS =================
@@ -96,7 +96,7 @@ func SetupRouter() *gin.Engine {
 		//  NEW → Upload Thumbnail / Banner / Poster
 		admin.POST("/cartoon/upload-image", controllers.UploadCartoonImage)
 
-		// 🔥 NEW → Delete Cartoon Image
+		//  NEW → Delete Cartoon Image
 		admin.DELETE("/cartoon/image/:id", controllers.DeleteCartoonImage)
 
 		// ================= LOGS =================
@@ -104,17 +104,17 @@ func SetupRouter() *gin.Engine {
 
 		// ================= ADMIN MANAGEMENT =================
 
-		// 🔐 SUPER ADMIN ONLY → LIST ADMINS
+		//  SUPER ADMIN ONLY → LIST ADMINS
 		admin.GET(
 			"/list",
 			middlewares.SuperAdminOnly(),
 			controllers.GetAllAdmins,
 		)
 
-		// 🔐 CREATE ADMIN
+		//  CREATE ADMIN
 		admin.POST("/create-admin", controllers.CreateAdmin)
 
-		// 🔐 SUPER ADMIN ONLY → DELETE ADMIN
+		//  SUPER ADMIN ONLY → DELETE ADMIN
 		admin.DELETE(
 			"/delete-admin/:id",
 			middlewares.SuperAdminOnly(),

@@ -18,15 +18,15 @@ func ConnectDB() {
 
 	// 2️⃣ Fallback to local DB for development
 	if dsn == "" {
-		log.Println("⚠️ DB_URL not found, using local database config")
+		log.Println(" DB_URL not found, using local database config")
 		dsn = "host=localhost user=postgres password=12345678 dbname=CN port=5432 sslmode=disable"
 	}
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("❌ Database connection failed:", err)
+		log.Fatal(" Database connection failed:", err)
 	}
 
 	DB = database
-	log.Println("✅ PostgreSQL Connected Successfully")
+	log.Println(" PostgreSQL Connected Successfully")
 }

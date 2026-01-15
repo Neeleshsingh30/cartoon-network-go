@@ -22,7 +22,7 @@ func worker() {
 	for job := range JobQueue {
 		switch job.Type {
 
-		// 👀 Views are async
+		//  Views are async
 		case "VIEW":
 			db.DB.Create(job.Data.(*models.CartoonView))
 

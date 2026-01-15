@@ -109,7 +109,7 @@ func AddCartoon(c *gin.Context) {
 		return
 	}
 
-	// ✅ Parse air_date safely
+	//  Parse air_date safely
 	var airDate time.Time
 	if input.AirDate != "" {
 		parsedDate, err := time.Parse("2006-01-02", input.AirDate)
@@ -145,7 +145,7 @@ func AddCartoon(c *gin.Context) {
 }
 
 /* =========================================================
-   DELETE CARTOON (FULL CLEANUP ✅)
+   DELETE CARTOON (FULL CLEANUP )
 ========================================================= */
 
 func DeleteCartoon(c *gin.Context) {
@@ -157,13 +157,13 @@ func DeleteCartoon(c *gin.Context) {
 		return
 	}
 
-	// 🔥 Delete characters
+	//  Delete characters
 	db.DB.Where("cartoon_id = ?", cartoon.ID).Delete(&models.Character{})
 
-	// 🔥 Delete images (thumbnail/banner/poster)
+	//  Delete images (thumbnail/banner/poster)
 	db.DB.Where("cartoon_id = ?", cartoon.ID).Delete(&models.CartoonImage{})
 
-	// 🔥 Delete cartoon
+	//  Delete cartoon
 	db.DB.Delete(&cartoon)
 
 	db.DB.Create(&models.AdminActivityLog{
@@ -218,7 +218,7 @@ func AddCharacter(c *gin.Context) {
 }
 
 /* =========================================================
-   GET CHARACTERS BY CARTOON  ✅ (MISSING FUNCTION)
+   GET CHARACTERS BY CARTOON   (MISSING FUNCTION)
 ========================================================= */
 
 func GetCharactersByCartoon(c *gin.Context) {
@@ -309,7 +309,7 @@ func GetAllCartoons(c *gin.Context) {
 /*
 =========================================================
 
-	UPLOAD CARTOON IMAGE (thumbnail/banner/poster) ✅
+	UPLOAD CARTOON IMAGE (thumbnail/banner/poster)
 
 =========================================================
 */
@@ -322,7 +322,7 @@ type UploadImageInput struct {
 func UploadCartoonImage(c *gin.Context) {
 	var input UploadImageInput
 
-	// ✅ JSON read karo
+	//  JSON read karo
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(400, gin.H{"error": "Invalid JSON"})
 		return
@@ -347,7 +347,7 @@ func UploadCartoonImage(c *gin.Context) {
 }
 
 /* =========================================================
-   DELETE CARTOON IMAGE (thumbnail/banner) ✅
+   DELETE CARTOON IMAGE (thumbnail/banner)
 ========================================================= */
 
 func DeleteCartoonImage(c *gin.Context) {
