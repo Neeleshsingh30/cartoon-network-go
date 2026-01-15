@@ -1,10 +1,10 @@
 package router
 
 import (
-	"time"
-
 	"backend/controllers"
 	"backend/middlewares"
+	"strings"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -22,7 +22,10 @@ func SetupRouter() *gin.Engine {
 	// CORS CONFIG
 	// =========================================
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://cartoon-network-go-frontend.vercel.app"},
+		AllowOriginFunc: func(origin string) bool {
+			return strings.HasPrefix(origin, "https://cartoon-network-go")
+		},
+		// AllowOrigins:     []string{"https://cartoon-network-go-frontend.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
