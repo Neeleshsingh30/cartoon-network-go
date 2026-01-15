@@ -136,7 +136,7 @@ async function loadTrendingCartoons(){
 /* ---------- LOGOUT ---------- */
 function logout(){
   localStorage.removeItem("token");
-  window.location.href = "index.html";
+  window.location.href = "../../index.html";
 }
 
 /* ---------- INIT ---------- */
@@ -146,7 +146,7 @@ window.onload = function(){
 
     const token = localStorage.getItem("token");
     if(!token){
-      window.location.href = "index.html";
+      window.location.href = "../../index.html";
       return;
     }
     loadTrendingCartoons();
