@@ -23,7 +23,15 @@ func SetupRouter() *gin.Engine {
 	// =========================================
 	r.Use(cors.New(cors.Config{
 		AllowOriginFunc: func(origin string) bool {
-			return strings.HasPrefix(origin, "https://cartoon-network-go")
+			// allow all vercel preview + prod domains
+			if strings.HasSuffix(origin, ".vercel.app") {
+				return true
+			}
+			// allow localhost for dev
+			if strings.HasPrefix(origin, "http://localhost") {
+				return true
+			}
+			return false
 		},
 		// AllowOrigins:     []string{"https://cartoon-network-go-frontend.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
