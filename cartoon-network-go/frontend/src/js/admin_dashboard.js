@@ -37,7 +37,7 @@ async function loadAdminCartoons() {
     }
 
     cartoons.forEach(c => {
-      /* ✅ BACKEND DIRECT FIELD */
+      /*  BACKEND DIRECT FIELD */
       const image =
         c.thumbnail && c.thumbnail.trim() !== ""
           ? c.thumbnail

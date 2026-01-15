@@ -77,12 +77,12 @@ func SetupRouter() *gin.Engine {
 		admin.POST("/cartoon/:cartoon_id/character", controllers.AddCharacter)
 		admin.GET("/cartoon/:cartoon_id/characters", controllers.GetCharactersByCartoon)
 
-		// 🔥 NEW → DELETE CHARACTER
+		//  NEW → DELETE CHARACTER
 		admin.DELETE("/character/:id", controllers.DeleteCharacter)
 
 		// ================= IMAGES =================
 
-		// 🔥 NEW → Upload Thumbnail / Banner / Poster
+		//  NEW → Upload Thumbnail / Banner / Poster
 		admin.POST("/cartoon/upload-image", controllers.UploadCartoonImage)
 
 		// 🔥 NEW → Delete Cartoon Image
