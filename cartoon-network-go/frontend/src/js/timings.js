@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://cartoon-network-go-1.onrender.com";
 
 /* ==== COMMON IMAGE PICKER (same as home.js) ==== */
 function getCartoonImage(c) {

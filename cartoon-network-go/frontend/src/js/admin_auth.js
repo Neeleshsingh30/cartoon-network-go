@@ -1,6 +1,6 @@
 /* ================= ADMIN LOGIN ================= */
 
-const BASE_URL = "http://localhost:8000"; // loaded from .env at build time
+const BASE_URL = "https://cartoon-network-go-1.onrender.com"; // loaded from .env at build time
 
 async function adminLogin() {
   const username = document.getElementById("username").value.trim();
