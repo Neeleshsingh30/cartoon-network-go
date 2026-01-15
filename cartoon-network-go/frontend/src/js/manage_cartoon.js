@@ -51,7 +51,7 @@ async function addCartoon() {
 }
 
 
-/* ================= UPLOAD IMAGE ================= */
+
 /* ================= UPLOAD CARTOON IMAGE (URL) ================= */
 
 

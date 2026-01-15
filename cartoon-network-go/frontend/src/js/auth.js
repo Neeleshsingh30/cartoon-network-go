@@ -53,13 +53,13 @@ async function submitForm(){
     return;
   }
 
-  // 🔥 If LOGIN → token already in response
+  //  If LOGIN → token already in response
   if(isLogin){
     localStorage.setItem("token", data.access_token);
     window.location.href = "src/pages/home.html";
   }
 
-  // 🔥 If SIGNUP → auto login now
+  //  If SIGNUP → auto login now
   else {
     const loginRes = await fetch(BASE_URL + "/login",{
       method:"POST",

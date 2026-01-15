@@ -59,7 +59,7 @@ async function createAdmin() {
       return;
     }
 
-    success.innerText = "Admin created successfully ✅";
+    success.innerText = "Admin created successfully ";
     document.getElementById("username").value = "";
     document.getElementById("password").value = "";
 

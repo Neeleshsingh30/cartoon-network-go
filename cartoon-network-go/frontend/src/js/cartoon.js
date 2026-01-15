@@ -51,8 +51,8 @@ async function loadCartoon(){
     <div>IMDb: ${data.ImdbRating}/10 
       <span class="rating-stars">${renderStars(data.ImdbRating)}</span>
     </div>
-    <div>📅 Aired On: ${new Date(data.AirDate).toDateString()}</div>
-    <div>⏰ Show Time: ${data.ShowTime}</div>
+    <div> Aired On: ${new Date(data.AirDate).toDateString()}</div>
+    <div> Show Time: ${data.ShowTime}</div>
   `;
 
   /* ===== CHARACTERS ===== */

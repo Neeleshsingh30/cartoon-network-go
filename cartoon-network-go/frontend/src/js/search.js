@@ -25,7 +25,7 @@ async function loadResults() {
     grid.innerHTML = "";
 
     if (!data.length) {
-      grid.innerHTML = "<p>No cartoons found 😢</p>";
+      grid.innerHTML = "<p>No cartoons found </p>";
       return;
     }
 

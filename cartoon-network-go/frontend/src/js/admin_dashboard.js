@@ -16,7 +16,7 @@ async function loadAdminCartoons() {
       }
     });
 
-    // 🔒 Token expired / invalid
+    //  Token expired / invalid
     if (res.status === 401) {
       localStorage.removeItem("admin_token");
       localStorage.removeItem("admin_role");
