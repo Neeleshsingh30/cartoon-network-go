@@ -8,6 +8,9 @@ function toggle(){
   document.querySelector(".auth-box button").innerText = isLogin ? "Login" : "Signup";
   document.getElementById("confirm").style.display = isLogin ? "none" : "block";
   document.getElementById("email").style.display = isLogin ? "none" : "block";
+  document.getElementById("switch").innerText = isLogin
+    ? "Don't have an account? Sign up"
+    : "Already have an account? Login";
 }
 
 async function submitForm(){
