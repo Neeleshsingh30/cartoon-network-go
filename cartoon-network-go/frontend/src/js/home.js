@@ -122,7 +122,7 @@ async function loadTrendingCartoons(){
       card.innerHTML = `
         <img src="${thumb}">
         <p>${c.Name}</p>
-        <span style="color:gold;">🔥 ${c.view_count} views</span>
+        <span style="color:gold;"> ${c.view_count} views</span>
       `;
 
       grid.appendChild(card);
