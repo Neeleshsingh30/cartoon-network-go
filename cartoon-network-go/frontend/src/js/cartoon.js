@@ -9,6 +9,21 @@ function authHeader(){
   return token ? { "Authorization": `Bearer ${token}` } : {};
 }
 
+/* ==== COMMON IMAGE PICKER ==== */
+function getCartoonImage(c, type = "thumbnail") {
+  let thumb = "/src/images/CN-BG-AUTH.jpg";
+
+  if (c.Images && c.Images.length) {
+    let img = c.Images.find(i => i.image_type === type);
+
+    if (!img && type !== "poster")
+      img = c.Images.find(i => i.image_type === "poster");
+
+    if (img && img.image_url) thumb = img.image_url;
+  }
+  return thumb;
+}
+
 /* ---------- STAR RENDER ---------- */
 function renderStars(imdb){
   const stars = Math.round(imdb / 2);
@@ -20,12 +35,11 @@ async function loadCartoon(){
   const res = await fetch(`${BASE_URL}/cartoon/${id}`);
   const data = await res.json();
 
- const banner = data.Images?.find(i => i.ImageType === "banner")?.ImageURL;
-if (banner) {
+  /* ===== BANNER IMAGE ===== */
+  const banner = getCartoonImage(data, "banner");
   document.getElementById("bannerImg").src = banner;
-}
 
-
+  /* ===== INFO BOX ===== */
   document.getElementById("cartoonInfo").innerHTML = `
     <div class="info-box">Description: ${data.Description}</div>
     <div class="info-box">Genre: ${data.Genre}</div>
@@ -41,6 +55,7 @@ if (banner) {
     <div>⏰ Show Time: ${data.ShowTime}</div>
   `;
 
+  /* ===== CHARACTERS ===== */
   const table = document.getElementById("charTable");
   table.innerHTML = "";
   data.Characters.forEach(ch => {
@@ -53,13 +68,13 @@ if (banner) {
       </tr>
     `;
   });
-  
 
   await checkLiked();
   loadRecommendations();
   addView();
 }
 
+/* ---------- VIEW COUNT ---------- */
 async function addView(){
   const token = localStorage.getItem("token");
   if(!token) return;
@@ -67,9 +82,7 @@ async function addView(){
   try{
     await fetch(`${BASE_URL}/cartoon/${id}/view`,{
       method: "POST",
-      headers:{
-        "Authorization": `Bearer ${token}`
-      }
+      headers:{ "Authorization": `Bearer ${token}` }
     });
   }catch(err){
     console.warn("View not counted");
@@ -103,7 +116,6 @@ function updateHeart(){
 
 /* ---------- LIKE / UNLIKE ---------- */
 async function toggleFavourite(){
-
   if(!localStorage.getItem("token")){
     alert("Please login again");
     window.location.href = "index.html";
@@ -139,13 +151,8 @@ async function loadRecommendations(){
     grid.innerHTML = "";
 
     data.forEach(c => {
-      let thumb = "../../images/CN-BG-AUTH.jpg";
 
-      if(c.Images && c.Images.length){
-        const img = c.Images.find(i => i.ImageType === "thumbnail") 
-               || c.Images.find(i => i.ImageType === "poster");
-        if(img) thumb = img.ImageURL;
-      }
+      const thumb = getCartoonImage(c);
 
       const card = document.createElement("div");
       card.className = "recommend-card";

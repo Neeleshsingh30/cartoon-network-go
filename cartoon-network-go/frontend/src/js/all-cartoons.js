@@ -1,29 +1,50 @@
 const BASE_URL = "http://localhost:8000";
 
-async function loadAllCartoons(){
-  const res = await fetch(`${BASE_URL}/cartoons`);
-  const cartoons = await res.json();
+/* ==== COMMON IMAGE PICKER ==== */
+function getCartoonImage(c) {
+  let thumb = "/src/images/CN-BG-AUTH.jpg";
 
-  const grid = document.getElementById("allGrid");
+  if (c.Images && c.Images.length) {
+    const img =
+      c.Images.find(i => i.image_type === "banner") ||
+      c.Images.find(i => i.image_type === "thumbnail") ||
+      c.Images.find(i => i.image_type === "poster");
 
- cartoons.forEach(c => {
-  let img = c.Images.find(i => i.ImageType === "banner")?.ImageURL 
-            || "../../images/CN-BG-AUTH.jpg";
+    if (img && img.image_url) thumb = img.image_url;
+  }
+  return thumb;
+}
 
-  const card = document.createElement("div");
-  card.className = "cartoon-box";
-  card.onclick = () => {
-    window.location.href = `cartoon.html?id=${c.ID}`;
-  };
+/* ==== LOAD ALL CARTOONS ==== */
+async function loadAllCartoons() {
+  try {
+    const res = await fetch(`${BASE_URL}/cartoons`);
+    const cartoons = await res.json();
 
-  card.innerHTML = `
-    <img src="${img}">
-    <h4>${c.Name}</h4>
-  `;
+    const grid = document.getElementById("allGrid");
+    grid.innerHTML = "";
 
-  grid.appendChild(card);
-});
+    cartoons.forEach(c => {
 
+      const img = getCartoonImage(c);
+
+      const card = document.createElement("div");
+      card.className = "cartoon-box";
+      card.onclick = () => {
+        window.location.href = `cartoon.html?id=${c.ID}`;
+      };
+
+      card.innerHTML = `
+        <img src="${img}">
+        <h4>${c.Name}</h4>
+      `;
+
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("All cartoons load error:", err);
+  }
 }
 
 window.onload = loadAllCartoons;

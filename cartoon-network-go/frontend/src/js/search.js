@@ -1,38 +1,52 @@
 const BASE_URL = "http://localhost:8000";
 const query = new URLSearchParams(window.location.search).get("query");
 
-async function loadResults(){
-  const res = await fetch(`${BASE_URL}/cartoons/search?query=${query}`);
-  const data = await res.json();
+/* ==== COMMON IMAGE PICKER ==== */
+function getCartoonImage(c) {
+  let thumb = "/src/images/CN-BG-AUTH.jpg";
 
-  const grid = document.getElementById("resultGrid");
-  grid.innerHTML = "";
+  if (c.Images && c.Images.length) {
+    const img =
+      c.Images.find(i => i.image_type === "thumbnail") ||
+      c.Images.find(i => i.image_type === "poster");
 
-  if(data.length === 0){
-    grid.innerHTML = "<p>No cartoons found 😢</p>";
-    return;
+    if (img && img.image_url) thumb = img.image_url;
   }
+  return thumb;
+}
 
-  data.forEach(c => {
-    let thumb = "../../images/CN-BG-AUTH.jpg";
+/* ==== LOAD SEARCH RESULTS ==== */
+async function loadResults() {
+  try {
+    const res = await fetch(`${BASE_URL}/cartoons/search?query=${encodeURIComponent(query)}`);
+    const data = await res.json();
 
-    if(c.Images && c.Images.length){
-      const img = c.Images.find(i => i.ImageType === "thumbnail") 
-             || c.Images.find(i => i.ImageType === "poster");
-      if(img) thumb = img.ImageURL;
+    const grid = document.getElementById("resultGrid");
+    grid.innerHTML = "";
+
+    if (!data.length) {
+      grid.innerHTML = "<p>No cartoons found 😢</p>";
+      return;
     }
 
-    const card = document.createElement("div");
-    card.className = "cartoon-card";
-    card.onclick = () => window.location.href = `cartoon.html?id=${c.ID}`;
+    data.forEach(c => {
+      const thumb = getCartoonImage(c);
 
-    card.innerHTML = `
-      <img src="${thumb}">
-      <p>${c.Name}</p>
-    `;
+      const card = document.createElement("div");
+      card.className = "cartoon-card";
+      card.onclick = () => window.location.href = `cartoon.html?id=${c.ID}`;
 
-    grid.appendChild(card);
-  });
+      card.innerHTML = `
+        <img src="${thumb}">
+        <p>${c.Name}</p>
+      `;
+
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Search load error:", err);
+  }
 }
 
 window.onload = loadResults;
