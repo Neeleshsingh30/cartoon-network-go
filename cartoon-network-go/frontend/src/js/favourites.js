@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://cartoon-network-go-1.onrender.com";
 
 /* ---------- AUTH HEADER ---------- */
 function authHeader() {

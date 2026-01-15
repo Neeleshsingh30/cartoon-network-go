@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://cartoon-network-go-1.onrender.com";
 const query = new URLSearchParams(window.location.search).get("query");
 
 /* ==== COMMON IMAGE PICKER ==== */

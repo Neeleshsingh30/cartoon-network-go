@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://cartoon-network-go-1.onrender.com";
 const id = new URLSearchParams(window.location.search).get("id");
 
 let isLiked = false;

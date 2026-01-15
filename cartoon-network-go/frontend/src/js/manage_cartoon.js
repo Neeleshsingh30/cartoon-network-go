@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8000";
+const BASE_URL = "https://cartoon-network-go-1.onrender.com";
 const token = localStorage.getItem("admin_token");
 
 if (!token) window.location.href = "admin.html";
