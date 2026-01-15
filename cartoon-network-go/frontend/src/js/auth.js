@@ -56,7 +56,7 @@ async function submitForm(){
   // 🔥 If LOGIN → token already in response
   if(isLogin){
     localStorage.setItem("token", data.access_token);
-    window.location.href = "home.html";
+    window.location.href = "src/pages/home.html";
   }
 
   // 🔥 If SIGNUP → auto login now
@@ -75,6 +75,6 @@ async function submitForm(){
     }
 
     localStorage.setItem("token", loginData.access_token);
-    window.location.href = "home.html";
+    window.location.href = "src/pages/home.html";
   }
 }
