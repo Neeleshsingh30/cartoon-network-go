@@ -241,7 +241,7 @@ func GetCharactersByCartoon(c *gin.Context) {
 }
 
 /* =========================================================
-   DELETE CHARACTER ✅ (NEW)
+   DELETE CHARACTER  (NEW)
 ========================================================= */
 
 func DeleteCharacter(c *gin.Context) {
@@ -307,8 +307,9 @@ func GetAllCartoons(c *gin.Context) {
 }
 
 /*
-	=========================================================
-	  UPLOAD CARTOON IMAGE (thumbnail/banner/poster) ✅
+=========================================================
+
+	UPLOAD CARTOON IMAGE (thumbnail/banner/poster) ✅
 
 =========================================================
 */

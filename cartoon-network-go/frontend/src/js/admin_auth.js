@@ -1,5 +1,7 @@
 /* ================= ADMIN LOGIN ================= */
 
+const BASE_URL = "http://localhost:8000"; // loaded from .env at build time
+
 async function adminLogin() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
@@ -13,7 +15,7 @@ async function adminLogin() {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/admin/login", {
+    const response = await fetch(`${BASE_URL}/admin/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -28,11 +30,11 @@ async function adminLogin() {
       return;
     }
 
-    /* ✅ SAVE AUTH DATA (KEYS MUST MATCH EVERYWHERE) */
+    /*  SAVE AUTH DATA */
     localStorage.setItem("admin_token", data.token);
     localStorage.setItem("admin_role", data.role);
 
-    /* ✅ REDIRECT TO DASHBOARD */
+    /*  REDIRECT */
     window.location.href = "admin_dashboard.html";
 
   } catch (err) {

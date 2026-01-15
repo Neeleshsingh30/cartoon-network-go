@@ -55,8 +55,6 @@ async function addCartoon() {
 /* ================= UPLOAD CARTOON IMAGE (URL) ================= */
 
 
-/* ================= UPLOAD CARTOON IMAGE (URL) ================= */
-
 async function uploadCartoonImage() {
 
   const cartoonId = document.getElementById("imgCartoonId").value.trim();
