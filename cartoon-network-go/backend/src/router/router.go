@@ -22,7 +22,7 @@ func SetupRouter() *gin.Engine {
 	// CORS CONFIG
 	// =========================================
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{" https://cartoon-network-go-frontend.vercel.app "},
+		AllowOrigins:     []string{"https://cartoon-network-go-frontend.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
